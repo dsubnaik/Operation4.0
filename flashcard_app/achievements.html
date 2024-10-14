@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e3e6; /* Matching the background color */
+        }
+
+        .header {
+            background-color: white;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-name {
+            font-size: 22px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .header nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header nav a {
+            color: black;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .header nav a:hover {
+            background-color: #575757;
+            color: white;
+        }
+
+        .header nav a.active {
+            background-color: #636060;
+            color: white;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center; /* Centering the text */
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center; /* Centering headings */
+        }
+
+        .achievements-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .achievement-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .achievement-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .achievement-badge {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #f5f0f7;
+            color: #333;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <div class="header">
+        <div class="app-name">Operation 4.0</div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="study.html">Study</a>
+            <a href="account.html">My Account</a>
+            <a href="achievements.html" class="active">Achievements</a>
+            <a href="progress.html">Progress</a>
+            <a href="effort-levels.html">Effort Levels</a>
+            <a href="recommended-sources.html">Recommended Sources</a>
+        </nav>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h1>Achievements</h1>
+        <p>Here are the achievements you've unlocked so far:</p>
+
+        <!-- Achievements List -->
+        <div class="achievements-list">
+            <!-- Achievement 1 -->
+            <div class="achievement-card">
+                <h3>First Quiz Completed</h3>
+                <p>Congratulations on completing your first quiz!</p>
+                <div class="achievement-badge">Beginner Level</div>
+            </div>
+
+            <!-- Achievement 2 -->
+            <div class="achievement-card">
+                <h3>5 Flashcards Created</h3>
+                <p>You've created your first set of flashcards.</p>
+                <div class="achievement-badge">Flashcard Creator</div>
+            </div>
+
+            <!-- Achievement 3 -->
+            <div class="achievement-card">
+                <h3>10 Quizzes Passed</h3>
+                <p>You're on fire! You've successfully passed 10 quizzes.</p>
+                <div class="achievement-badge">Quiz Master</div>
+            </div>
+
+            <!-- Achievement 4 -->
+            <div class="achievement-card">
+                <h3>Consistent Effort</h3>
+                <p>You've studied for 7 consecutive days.</p>
+                <div class="achievement-badge">Effort Streak</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e3e6;
+        }
+
+        /* Top Bar for Operation 4.0, Quiz title, and Exit button */
+        .top-bar {
+            background-color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-name {
+            font-size: 22px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .exit-button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .exit-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .main-content {
+            padding: 100px 20px 20px; /* Add padding to ensure content is below the top bar */
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .quiz-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .quiz-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .quiz-card form {
+            margin-top: 15px;
+        }
+
+        .quiz-card label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .quiz-card input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-btn {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .quiz-result {
+            margin-top: 20px;
+            color: #4caf50;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar with Operation 4.0, Quiz title, and Exit button -->
+    <div class="top-bar">
+        <div class="app-name">Operation 4.0</div>
+        <div class="page-title">Quiz</div>
+        <button class="exit-button" onclick="exitQuiz()">Exit</button>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h1>Quiz: Test Your Knowledge</h1>
+
+        <!-- Quiz Question 1 -->
+        <div class="quiz-card">
+            <h3>Question 1: What is the capital of France?</h3>
+            <form>
+                <label>
+                    <input type="radio" name="q1" value="a">
+                    A) Berlin
+                </label>
+                <label>
+                    <input type="radio" name="q1" value="b">
+                    B) Madrid
+                </label>
+                <label>
+                    <input type="radio" name="q1" value="c">
+                    C) Paris
+                </label>
+                <label>
+                    <input type="radio" name="q1" value="d">
+                    D) Rome
+                </label>
+                <button type="submit" class="submit-btn">Submit Answer</button>
+            </form>
+        </div>
+
+        <!-- Quiz Question 2 -->
+        <div class="quiz-card">
+            <h3>Question 2: Which of the following is a mammal?</h3>
+            <form>
+                <label>
+                    <input type="radio" name="q2" value="a">
+                    A) Shark
+                </label>
+                <label>
+                    <input type="radio" name="q2" value="b">
+                    B) Dolphin
+                </label>
+                <label>
+                    <input type="radio" name="q2" value="c">
+                    C) Crocodile
+                </label>
+                <label>
+                    <input type="radio" name="q2" value="d">
+                    D) Eagle
+                </label>
+                <button type="submit" class="submit-btn">Submit Answer</button>
+            </form>
+        </div>
+
+        <!-- Quiz Result -->
+        <div class="quiz-result" id="quizResult">
+            <!-- Result will be displayed here after submitting answers -->
+        </div>
+    </div>
+
+    <script>
+        // Placeholder script to simulate quiz result functionality
+        document.querySelectorAll('.quiz-card form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent actual form submission
+                document.getElementById('quizResult').textContent = 'Your answers have been submitted. Please wait for results!';
+            });
+        });
+
+        // Exit button functionality
+        function exitQuiz() {
+            window.location.href = 'home.html'; // Replace with the URL where you want to redirect on exit
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Page</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e3e6;
+        }
+
+        .header {
+            background-color: white;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-name {
+            font-size: 22px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .header nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header nav a {
+            color: black;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .header nav a:hover {
+            background-color: #575757;
+            color: white;
+        }
+
+        .header nav a.active {
+            background-color: #636060;
+            color: white;
+        }
+
+        .bubble-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bubble-button {
+            background-color: #f5f0f7;
+            border: none;
+            border-radius: 50px;
+            color: #333;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .bubble-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="app-name">Operation 4.0</div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="study.html" class="active">Study</a>
+            <a href="account.html">My Account</a>
+            <a href="achievements.html">Achievements</a>
+            <a href="progress.html">Progress</a>
+            <a href="effort-levels.html">Effort Levels</a>
+            <a href="recommended-sources.html">Recommended Sources</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1>What would you like to do?</h1>
+        <div class="bubble-buttons">
+            <button class="bubble-button" onclick="goToFlashcards()">Create Flashcards</button>
+            <button class="bubble-button" onclick="goToQuiz()">Take a Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Navigate to flashcards.html
+        function goToFlashcards() {
+            window.location.href = 'flashcards.html';
+        }
+
+        // Navigate to quiz.html
+        function goToQuiz() {
+            window.location.href = 'quiz.html'; // If quiz.html is in the same directory
+        }
+    </script>
+
+</body>
+</html>

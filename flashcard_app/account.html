@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Page</title>
+    <style>
+        /* Overall body styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e5e3e6; /* Matching the background color from the homepage */
+        }
+
+        /* Header (white top panel) */
+        .header {
+            background-color: white;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-name {
+            font-size: 22px; /* Matching homepage font size */
+            font-weight: bold;
+            color: black;
+        }
+
+        /* Navigation Links */
+        .header nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header nav a {
+            color: black;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 14px 20px;
+            text-align: center;
+        }
+
+        .header nav a:hover {
+            background-color: #575757;
+            color: white;
+        }
+
+        .header nav a.active {
+            background-color: #636060;
+            color: white;
+        }
+
+        /* Main content layout */
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Centering the content */
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        /* Profile Section styling */
+        .profile-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .profile-section h2 {
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        /* Styling for input fields */
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        /* Styling for buttons */
+        button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        #profileImage {
+            display: block;
+            margin-top: 10px;
+            border-radius: 50%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <div class="header">
+        <div class="app-name">Operation 4.0</div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="study.html">Study</a>
+            <a href="account.html" class="active">My Account</a>
+            <a href="achievements.html">Achievements</a>
+            <a href="progress.html">Progress</a>
+            <a href="effort-levels.html">Effort Levels</a>
+            <a href="recommended-sources.html">Recommended Sources</a>
+        </nav>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h1>Account Page</h1>
+        <p>Welcome to the My Account page.</p>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <h2>Edit Profile Picture</h2>
+            <input type="file" id="profilePicture">
+            <img id="profileImage" src="default_profile.png" alt="Profile Picture" width="150px">
+        </div>
+
+        <!-- Personal Information -->
+        <div class="profile-section">
+            <h2>Personal Information</h2>
+            <label>Name:</label>
+            <input type="text" id="userName" value="John Doe">
+            <label>Email:</label>
+            <input type="email" id="userEmail" value="johndoe@example.com" disabled>
+        </div>
+
+        <!-- Password Management -->
+        <div class="profile-section">
+            <h2>Change Password</h2>
+            <label>New Password:</label>
+            <input type="password" id="newPassword">
+            <button type="button" onclick="updatePassword()">Update Password</button>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="profile-section">
+            <h2>Notification Settings</h2>
+            <label>
+                <input type="checkbox" id="emailNotifications" checked>
+                Email Notifications
+            </label>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="profile-section">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        function updatePassword() {
+            alert("Password Updated!");
+        }
+
+        function logout() {
+            alert("Logging out...");
+            window.location.href = 'login_screen.html'; 
+        }
+    </script>
+
+</body>
+</html>

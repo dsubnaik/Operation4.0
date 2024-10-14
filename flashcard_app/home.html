@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e3e6;
+        }
+
+        .header {
+            background-color: white;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-name {
+            font-size: 22px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .header nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header nav a {
+            color: black;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .header nav a:hover {
+            background-color: #575757;
+            color: white;
+        }
+
+        .header nav a.active {
+            background-color: #636060;
+            color: white;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="app-name">Operation 4.0</div>
+        <nav>
+            <a href="home.html" class="active">Home</a>
+            <a href="study.html">Study</a>
+            <a href="account.html">My Account</a>
+            <a href="achievements.html">Achievements</a>
+            <a href="progress.html">Progress</a>
+            <a href="effort-levels.html">Effort Levels</a>
+            <a href="recommended-sources.html">Recommended Sources</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1>Welcome to Operation 4.0</h1>
+        <p>This is the homepage where you can navigate to different sections.</p>
+    </div>
+
+</body>
+</html>

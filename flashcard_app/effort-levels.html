@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effort Levels</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e3e6; /* Matching the background color */
+        }
+
+        .header {
+            background-color: white;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-name {
+            font-size: 22px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .header nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header nav a {
+            color: black;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .header nav a:hover {
+            background-color: #575757;
+            color: white;
+        }
+
+        .header nav a.active {
+            background-color: #636060;
+            color: white;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .effort-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .effort-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .effort-level-bar-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .effort-level-bar {
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 20px;
+            transition: width 0.4s;
+        }
+
+        .effort-level-value {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .effort-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .insights-section {
+            background-color: #fafafa;
+            padding: 15px;
+            border-left: 5px solid #4caf50;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .insights-section h4 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .focus-area-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .focus-area-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .focus-area-section li {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .focus-area-section li span {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <div class="header">
+        <div class="app-name">Operation 4.0</div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="study.html">Study</a>
+            <a href="account.html">My Account</a>
+            <a href="achievements.html">Achievements</a>
+            <a href="progress.html">Progress</a>
+            <a href="effort-levels.html" class="active">Effort Levels</a>
+            <a href="recommended-sources.html">Recommended Sources</a>
+        </nav>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h1>Effort Levels</h1>
+        <p>Analyze your learning effort and consistency. Here's an overview of your current effort levels and personalized insights based on your activity.</p>
+
+        <!-- Effort Level: Study Frequency -->
+        <div class="effort-section">
+            <h3>Study Frequency</h3>
+            <p class="effort-description">How often you're studying in a week.</p>
+            <div class="effort-level-bar-container">
+                <div class="effort-level-bar" style="width: 60%;"></div>
+                <div class="effort-level-value">3 days/week</div>
+            </div>
+        </div>
+
+        <!-- Effort Level: Study Duration -->
+        <div class="effort-section">
+            <h3>Study Duration</h3>
+            <p class="effort-description">Total time spent studying this week.</p>
+            <div class="effort-level-bar-container">
+                <div class="effort-level-bar" style="width: 75%;"></div>
+                <div class="effort-level-value">7h 30m</div>
+            </div>
+        </div>
+
+        <!-- Personalized Insights -->
+        <div class="insights-section">
+            <h4>Personalized Insight</h4>
+            <p>Great job! You've increased your study time by 15% compared to last week. Try to study at least 4 days next week to maintain your progress.</p>
+        </div>
+
+        <!-- Focus Areas: Subjects -->
+        <div class="focus-area-section">
+            <h3>Focus Areas</h3>
+            <p>Here are the subjects you've been focusing on the most:</p>
+            <ul>
+                <li><span>Math</span> - 40% of study time</li>
+                <li><span>Science</span> - 30% of study time</li>
+                <li><span>History</span> - 20% of study time</li>
+                <li><span>English</span> - 10% of study time</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

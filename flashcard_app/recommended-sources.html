@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended Resources</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e3e6;
+        }
+
+        .header {
+            background-color: white;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .app-name {
+            font-size: 22px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .header nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header nav a {
+            color: black;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .header nav a:hover {
+            background-color: #575757;
+            color: white;
+        }
+
+        .header nav a.active {
+            background-color: #636060;
+            color: white;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .resource-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .resource-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .resource-card p {
+            color: #666;
+        }
+
+        .resource-card a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .resource-card a:hover {
+            text-decoration: underline;
+        }
+
+        .resource-type {
+            background-color: #f5f5f5;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .subject-badge {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <div class="header">
+        <div class="app-name">Operation 4.0</div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="study.html">Study</a>
+            <a href="account.html">My Account</a>
+            <a href="achievements.html">Achievements</a>
+            <a href="progress.html">Progress</a>
+            <a href="effort-levels.html">Effort Levels</a>
+            <a href="recommended-sources.html" class="active">Recommended Resources</a>
+        </nav>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h1>Recommended Resources</h1>
+        <p>Curated learning materials based on your progress and areas of improvement.</p>
+
+        <!-- Resource 1 -->
+        <div class="resource-card">
+            <span class="resource-type">Article</span>
+            <h3>Understanding Algebra Basics</h3>
+            <p>This comprehensive article covers the basics of algebra, including solving equations and understanding variables.</p>
+            <p><a href="https://example.com/algebra-basics" target="_blank">Read more</a></p>
+            <span class="subject-badge">Math</span>
+        </div>
+
+        <!-- Resource 2 -->
+        <div class="resource-card">
+            <span class="resource-type">Video</span>
+            <h3>The Scientific Method Explained</h3>
+            <p>Watch this short video to understand the steps of the scientific method and how it applies to real-world research.</p>
+            <p><a href="https://example.com/scientific-method-video" target="_blank">Watch video</a></p>
+            <span class="subject-badge">Science</span>
+        </div>
+
+        <!-- Resource 3 -->
+        <div class="resource-card">
+            <span class="resource-type">External Link</span>
+            <h3>World History: Key Events Timeline</h3>
+            <p>A detailed timeline of significant events in world history, ideal for quick review before your next quiz.</p>
+            <p><a href="https://example.com/history-timeline" target="_blank">Visit resource</a></p>
+            <span class="subject-badge">History</span>
+        </div>
+
+        <!-- Resource 4 -->
+        <div class="resource-card">
+            <span class="resource-type">E-book</span>
+            <h3>Introduction to English Literature</h3>
+            <p>Download this e-book to get an overview of key themes and authors in English literature.</p>
+            <p><a href="https://example.com/english-literature-ebook" target="_blank">Download e-book</a></p>
+            <span class="subject-badge">English</span>
+        </div>
+
+    </div>
+
+</body>
+</html>
