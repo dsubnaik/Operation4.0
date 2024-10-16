@@ -1,17 +1,16 @@
+/* Stylesheet */
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-
 body {
-  background-color: #e5e3e6; /* Match the gray background from the homepage */
+  background-color: #f7f9fd;
 }
-
 .header {
   background-color: white;
-  padding: 10px 0;
+  padding: 10px 20px;
   position: fixed;
   width: 100%;
   top: 0;
@@ -20,63 +19,45 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
 }
-
 .app-name {
-  font-size: 22px;
-  color: black;
-  font-weight: bold;
+  font-size: 1.5em;
+  color: #363d55;
+  font-weight: 600;
 }
-
 .page-title {
-  font-size: 22px;
-  color: black;
-  text-align: center;
-  flex-grow: 1;
+  font-size: 1.5em;
+  color: #363d55;
+  font-weight: 600;
 }
-
-nav {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
 #exit-btn {
   background-color: #ff5353;
-  color: #fff;
-  padding: 10px 15px;
+  color: white;
   border: none;
-  border-radius: 5px;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
   cursor: pointer;
 }
-
 #exit-btn:hover {
   background-color: #ff3333;
 }
-
 .container {
   width: 90vw;
   max-width: 62.5em;
   position: relative;
-  margin: 120px auto 0; /* Increased margin-top to avoid overlap with the header */
+  margin: 100px auto 0; /* Adjusted for the header height */
 }
-
 .add-flashcard-con {
   display: flex;
   justify-content: flex-end;
   padding: 1.2em 1em;
 }
-
 button {
   border: none;
   outline: none;
   cursor: pointer;
 }
-
-.add-flashcard-con button,
-#save-btn,
-.show-hide-btn {
+.add-flashcard-con button {
   font-size: 1em;
   background-color: #587ef4;
   color: #ffffff;
@@ -84,20 +65,9 @@ button {
   font-weight: 500;
   border-radius: 0.4em;
 }
-
-#save-btn {
-  font-size: 1em;
-  background-color: #587ef4;
-  color: #ffffff;
-  padding: 0.6em 0;
-  border-radius: 0.3em;
-  font-weight: 600;
-}
-
 #card-con {
   margin-top: 1em;
 }
-
 .question-container {
   width: 90vw;
   max-width: 34em;
@@ -113,7 +83,6 @@ button {
   border-radius: 0.6em;
   box-shadow: 0 1em 2em rgba(28, 0, 80, 0.1);
 }
-
 .question-container h2 {
   font-size: 2.2em;
   color: #363d55;
@@ -121,23 +90,19 @@ button {
   text-align: center;
   margin-bottom: 2em;
 }
-
 .wrapper {
   display: grid;
   grid-template-columns: 11fr 1fr;
   gap: 1em;
   margin-bottom: 1em;
 }
-
 .error-con {
   align-self: center;
 }
-
 #error {
   color: #ff5353;
   font-weight: 400;
 }
-
 .fa-xmark {
   font-size: 1.4em;
   background-color: #587ef4;
@@ -150,13 +115,11 @@ button {
   cursor: pointer;
   justify-self: flex-end;
 }
-
 label {
   color: #363d55;
   font-weight: 600;
   margin-bottom: 0.3em;
 }
-
 textarea {
   width: 100%;
   padding: 0.7em 0.5em;
@@ -166,46 +129,46 @@ textarea {
   border-radius: 0.3em;
   resize: none;
 }
-
 textarea:not(:last-child) {
   margin-bottom: 1.2em;
 }
-
 textarea:focus {
   border-color: #363d55;
 }
-
+#save-btn {
+  font-size: 1em;
+  background-color: #587ef4;
+  color: #ffffff;
+  padding: 0.6em 0;
+  border-radius: 0.3em;
+  font-weight: 600;
+}
 .card-list-container {
   display: grid;
   padding: 0.2em;
   gap: 1.5em;
   grid-template-columns: 1fr 1fr 1fr;
 }
-
 .card {
   background-color: #ffffff;
   box-shadow: 0 0.4em 1.2em rgba(28, 0, 80, 0.08);
   padding: 1.2em;
   border-radius: 0.4em;
 }
-
 .question-div,
 .answer-div {
   text-align: justify;
 }
-
 .question-div {
   margin-bottom: 0.5em;
   font-weight: 500;
   color: #363d55;
 }
-
 .answer-div {
   margin-top: 1em;
   font-weight: 400;
   color: #414a67;
 }
-
 .show-hide-btn {
   display: block;
   background-color: #587ef4;
@@ -215,43 +178,35 @@ textarea:focus {
   padding: 0.6em 0;
   border-radius: 0.3em;
 }
-
 .buttons-con {
   display: flex;
   justify-content: flex-end;
 }
-
 .edit,
 .delete {
   background-color: transparent;
   padding: 0.5em;
   font-size: 1.2em;
 }
-
 .edit {
   color: #587ef4;
 }
-
 .delete {
   color: #ff5353;
 }
-
 .hide {
   display: none;
 }
-
 @media screen and (max-width: 800px) {
   .card-list-container {
     grid-template-columns: 1fr 1fr;
     gap: 0.8em;
   }
 }
-
 @media screen and (max-width: 450px) {
   body {
     font-size: 14px;
   }
-
   .card-list-container {
     grid-template-columns: 1fr;
     gap: 1.2em;

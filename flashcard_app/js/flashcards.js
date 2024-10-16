@@ -17,126 +17,98 @@ addQuestion.addEventListener("click", () => {
 });
 
 // Hide Create flashcard Card
-closeBtn.addEventListener(
-  "click",
-  (hideQuestion = () => {
+closeBtn.addEventListener("click", () => {
+  container.classList.remove("hide");
+  addQuestionCard.classList.add("hide");
+  errorMessage.classList.add("hide");
+  editBool = false;
+});
+
+// Submit Question
+cardButton.addEventListener("click", () => {
+  const tempQuestion = question.value.trim();
+  const tempAnswer = answer.value.trim();
+  if (!tempQuestion || !tempAnswer) {
+    errorMessage.classList.remove("hide");
+  } else {
+    errorMessage.classList.add("hide");
     container.classList.remove("hide");
     addQuestionCard.classList.add("hide");
-    if (editBool) {
-      editBool = false;
-      submitQuestion();
-    }
-  })
-);
+    addFlashcard(tempQuestion, tempAnswer);
+    question.value = "";
+    answer.value = "";
+  }
+});
 
-// Submit Question and send data to server
-cardButton.addEventListener(
-  "click",
-  (submitQuestion = () => {
-    editBool = false;
-    let tempQuestion = question.value.trim();
-    let tempAnswer = answer.value.trim();
-    
-    if (!tempQuestion || !tempAnswer) {
-      errorMessage.classList.remove("hide");
-    } else {
-      // Hide the error message
-      errorMessage.classList.add("hide");
+// Function to add flashcard to the view
+function addFlashcard(questionText, answerText) {
+  const listCard = document.querySelector(".card-list-container");
+  const div = document.createElement("div");
+  div.classList.add("card");
 
-      // Prepare the data to be sent to the server
-      let flashcardData = {
-        question: tempQuestion,
-        answer: tempAnswer,
-        user_id: null // Add user ID if you plan to associate flashcards with users
-      };
+  // Question
+  div.innerHTML = `<p class="question-div">${questionText}</p>`;
 
-      // Send the data to the server via a POST request
-      fetch("/add_flashcard", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(flashcardData), // Convert data to JSON
-      })
-      .then((response) => {
-        if (response.ok) {
-          // Clear the input fields
-          question.value = "";
-          answer.value = "";
-          // Optionally reload or update the flashcards list
-          container.classList.remove("hide");
-          addQuestionCard.classList.add("hide");
-          // Fetch the updated flashcards list
-          viewlist();
-        } else {
-          console.error("Failed to add flashcard.");
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-    }
-  })
-);
+  // Answer
+  const displayAnswer = document.createElement("p");
+  displayAnswer.classList.add("answer-div", "hide");
+  displayAnswer.innerText = answerText;
 
-// Card Generate and fetch flashcards from the server
-function viewlist() {
-  fetch("/flashcards")
-    .then(response => response.json())
-    .then(data => {
-      let listCard = document.getElementsByClassName("card-list-container")[0];
-      listCard.innerHTML = ""; // Clear the current list
+  // Link to show/hide answer
+  const link = document.createElement("a");
+  link.href = "#";
+  link.className = "show-hide-btn";
+  link.innerText = "Show/Hide";
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    displayAnswer.classList.toggle("hide");
+  });
 
-      data.forEach(flashcard => {
-        let div = document.createElement("div");
-        div.classList.add("card");
+  div.appendChild(link);
+  div.appendChild(displayAnswer);
 
-        // Question
-        div.innerHTML += `<p class="question-div">${flashcard.question}</p>`;
+  // Edit button
+  const buttonsCon = document.createElement("div");
+  buttonsCon.classList.add("buttons-con");
+  const editButton = document.createElement("button");
+  editButton.className = "edit";
+  editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+  editButton.addEventListener("click", () => {
+    editBool = true;
+    modifyElement(editButton, true);
+    addQuestionCard.classList.remove("hide");
+  });
+  buttonsCon.appendChild(editButton);
 
-        // Answer
-        let displayAnswer = document.createElement("p");
-        displayAnswer.classList.add("answer-div", "hide");
-        displayAnswer.innerText = flashcard.answer;
+  // Delete Button
+  const deleteButton = document.createElement("button");
+  deleteButton.className = "delete";
+  deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+  deleteButton.addEventListener("click", () => {
+    div.remove();
+  });
+  buttonsCon.appendChild(deleteButton);
 
-        // Link to show/hide answer
-        let link = document.createElement("a");
-        link.setAttribute("href", "#");
-        link.setAttribute("class", "show-hide-btn");
-        link.innerHTML = "Show/Hide";
-        link.addEventListener("click", () => {
-          displayAnswer.classList.toggle("hide");
-        });
-
-        div.appendChild(link);
-        div.appendChild(displayAnswer);
-
-        // Edit and delete buttons (same as before)
-        let buttonsCon = document.createElement("div");
-        buttonsCon.classList.add("buttons-con");
-        // Edit Button
-        let editButton = document.createElement("button");
-        editButton.setAttribute("class", "edit");
-        editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
-        editButton.addEventListener("click", () => {
-          editBool = true;
-          question.value = flashcard.question;
-          answer.value = flashcard.answer;
-          addQuestionCard.classList.remove("hide");
-        });
-        buttonsCon.appendChild(editButton);
-        disableButtons(false);
-
-        // Delete Button
-        let deleteButton = document.createElement("button");
-        deleteButton.setAttribute("class", "delete");
-        deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
-        deleteButton.addEventListener("click", () => {
-          modifyElement(deleteButton);
-        });
-        buttonsCon.appendChild(deleteButton);
-
-        div.appendChild(buttonsCon);
-        listCard.appendChild(div);
-      });
-    })
-    .catch(error => console.error("Error fetching flashcards:", error));
+  div.appendChild(buttonsCon);
+  listCard.appendChild(div);
 }
+
+// Modify Elements
+const modifyElement = (element, edit = false) => {
+  const parentDiv = element.closest(".card");
+  const parentQuestion = parentDiv.querySelector(".question-div").innerText;
+  if (edit) {
+    const parentAnswer = parentDiv.querySelector(".answer-div").innerText;
+    answer.value = parentAnswer;
+    question.value = parentQuestion;
+    parentDiv.remove();
+  }
+};
+
+// Disable edit and delete buttons
+const disableButtons = (value) => {
+  const buttons = document.querySelectorAll(".edit, .delete");
+  buttons.forEach((button) => {
+    button.disabled = value;
+  });
+};
