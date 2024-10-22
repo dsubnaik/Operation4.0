@@ -1,0 +1,147 @@
+/* Basic reset for better cross-browser compatibility */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #F5F5F5;
+    color: #333;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 0 20px;
+    background: linear-gradient(135deg, #e0f7fa 30%, #f5f5f5 70%); /* Subtle gradient background */
+}
+
+header {
+    margin-bottom: 50px;
+    padding: 0 20px;
+    background: rgba(255, 255, 255, 0.8); /* Soft background behind header to make it pop */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-weight: 400;
+    font-size: 48px; 
+    color: #4285F4;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-weight: 300;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+p {
+    font-size: 18px;
+    color: #777;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+section {
+    margin-bottom: 50px;
+    padding: 0 20px;
+}
+
+ul {
+    list-style-type: disc; /* Changed to bullet points */
+    font-size: 18px;
+    color: #333;
+    padding-left: 40px; /* Indented bullets slightly */
+    text-align: left; /* Align bullets to the left */
+    display: inline-block; /* Keeps the list centered while text is aligned left */
+}
+
+ul li {
+    margin: 15px 0;
+}
+
+.login-signup {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 0 20px;
+}
+
+button {
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background-color: #357AE8;
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+footer {
+    margin-top: auto;
+    font-size: 12px;
+    color: #999;
+    padding: 20px 0;
+}
+
+/* Responsive Design: Small screens */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 36px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    ul {
+        font-size: 16px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .login-signup {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Responsive Design: Very small screens (mobile) */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    p, ul {
+        font-size: 14px;
+    }
+
+    button {
+        padding: 8px 18px;
+        font-size: 13px;
+    }
+}
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation 4.0 Signup Form</title>
+    <link rel="stylesheet" type="text/css" href="Css/signup_style.css">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <form action="/signup.html" method="POST">  <!-- Updated form to POST to /signup -->
+            <h1>Operation 4.0</h1>
+
+            <!-- First Name Field -->
+            <div class="input-box">
+                <input type="text" name="first_name" placeholder="First Name" required>
+                <i class='bx bx-user'></i>
+            </div>
+
+            <!-- Last Name Field -->
+            <div class="input-box">
+                <input type="text" name="last_name" placeholder="Last Name" required>
+                <i class='bx bx-user'></i>
+            </div>
+
+            <!-- Email Field -->
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+                <i class='bx bx-envelope'></i>
+            </div>
+
+            <!-- Username Field -->
+            <div class="input-box">
+                <input type="text" name="username" placeholder="Username" required>
+                <i class='bx bx-user'></i>
+            </div>
+
+            <!-- Password Field -->
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Password" required>
+                <i class='bx bx-lock'></i>
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div class="input-box">
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+                <i class='bx bx-lock-alt'></i>
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+
+            <p class="terms">By clicking the Sign Up button, you agree to our <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>.</p>
+        </form>
+
+        <div class="register-link">
+            <p>Already have an account? <a href="/login_screen.html">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>

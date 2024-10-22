@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation 4.0</title>
+    <link rel="stylesheet" href="css/splashpagestylesheet.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Operation 4.0</h1>
+        <h2>Welcome!</h2>
+        <p>
+            Our mission is to help students enhance their studying skills and improve grades through interactive games.
+        </p>
+    </header>
+
+    <main>
+        <section>
+            <h3>Features</h3>
+            <ul>
+                <li>Flash Cards</li>
+                <li>Handmade Quizzes</li>
+                <li>Access to Resources</li>
+                <li>Collectible Badges</li>
+                <li>Personal Login</li>
+            </ul>
+        </section>
+
+        <div class="login-signup">
+            <button id="loginButton">Login</button>
+            <button id="signupButton">Sign Up</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>Created on 10/04/24 | Last Updated: 10/21/24</p>
+    </footer>
+
+    <!-- Inline JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginButton = document.getElementById('loginButton');
+            const signupButton = document.getElementById('signupButton');
+
+            loginButton.addEventListener('click', () => {
+                window.location.href = '/login_screen.html';  // Redirect to login page
+            });
+
+            signupButton.addEventListener('click', () => {
+                window.location.href = '/signup.html';  // Redirect to signup page
+            });
+        });
+    </script>
+</body>
+</html>
