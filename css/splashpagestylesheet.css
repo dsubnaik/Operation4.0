@@ -30,7 +30,7 @@ header {
 h1 {
     font-weight: 400;
     font-size: 48px; 
-    color: #4285F4;
+    color: black;
     margin-bottom: 20px;
 }
 
@@ -76,7 +76,7 @@ ul li {
 }
 
 button {
-    background-color: #4285F4;
+    background-color: black;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -89,7 +89,7 @@ button {
 }
 
 button:hover {
-    background-color: #357AE8;
+    background-color: black;
     transform: scale(1.05); /* Slight zoom on hover */
 }
 
