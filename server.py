@@ -4,17 +4,21 @@ from authentication import handle_login, handle_signup
 from userDatabase import initialize_database
 import urllib
 import os
+import mimetypes
 
 PORT = 8000
-
 TEMPLATES_DIR = 'templates'  # Directory for HTML templates
+CSS_DIR = 'css'               # Directory for CSS files
 
-# Function to serve HTML pages
-def serve_page(handler, page_name):
+# Session dictionary to manage user sessions based on IP address
+sessions = {}
+
+# Function to serve HTML pages or static files (e.g., CSS)
+def serve_page(handler, file_path, content_type='text/html'):
     try:
-        with open(os.path.join(TEMPLATES_DIR, page_name), 'rb') as file:
+        with open(file_path, 'rb') as file:
             handler.send_response(200)
-            handler.send_header('Content-type', 'text/html')
+            handler.send_header('Content-type', content_type)
             handler.end_headers()
             handler.wfile.write(file.read())
     except FileNotFoundError:
@@ -25,30 +29,46 @@ def serve_page(handler, page_name):
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
+        # Serve HTML pages from templates directory
         if self.path == "/" or self.path == "/splashpage.html":
-            serve_page(self, "splashpage.html")  # Serve splash page as default
+            serve_page(self, os.path.join(TEMPLATES_DIR, "splashpage.html"))
         elif self.path == "/home.html":
-            serve_page(self, "home.html")  # Serve 'home.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "home.html"))
         elif self.path == "/login_screen.html":
-            serve_page(self, "login_screen.html")  # Serve 'login_screen.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "login_screen.html"))
         elif self.path == "/flashcards.html":
-            serve_page(self, "flashcards.html")  # Serve 'flashcards.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "flashcards.html"))
         elif self.path == "/quiz.html":
-            serve_page(self, "quiz.html")  # Serve 'quiz.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "quiz.html"))
         elif self.path == "/account.html":
-            serve_page(self, "account.html")  # Serve 'account.html'
+            if self.client_address[0] in sessions:
+                user_data = sessions[self.client_address[0]]
+                self.serve_account_page(user_data)
+            else:
+                redirect(self, '/login_screen.html')
         elif self.path == "/achievements.html":
-            serve_page(self, "achievements.html")  # Serve 'achievements.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "achievements.html"))
         elif self.path == "/progress.html":
-            serve_page(self, "progress.html")  # Serve 'progress.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "progress.html"))
         elif self.path == "/effort-levels.html":
-            serve_page(self, "effort-levels.html")  # Serve 'effort-levels.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "effort-levels.html"))
         elif self.path == "/recommended-sources.html":
-            serve_page(self, "recommended-sources.html")  # Serve 'recommended-sources.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "recommended-sources.html"))
         elif self.path == "/signup.html":
-            serve_page(self, "signup.html")  # Serve 'signup.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "signup.html"))
         elif self.path == "/study.html":
-            serve_page(self, "study.html")  # Serve 'study.html'
+            serve_page(self, os.path.join(TEMPLATES_DIR, "study.html"))
+        elif self.path == "/logout":
+            if self.client_address[0] in sessions:
+                del sessions[self.client_address[0]]
+            redirect(self, '/login_screen.html')
+        elif self.path.startswith("/css/"):
+            # Serve CSS files from the css directory
+            file_path = os.path.join(CSS_DIR, self.path[5:])  # Strip the `/css/` prefix
+            content_type, _ = mimetypes.guess_type(file_path)
+            if content_type is None:
+                content_type = 'text/css'  # Default to CSS if not identified
+            serve_page(self, file_path, content_type)
         else:
             super().do_GET()
 
@@ -60,12 +80,13 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             username = post_data.get('username', [''])[0]
             password = post_data.get('password', [''])[0]
 
-            if handle_login(username, password):
-                redirect(self, '/home.html')  # Redirect to home page on successful login
+            user_data = handle_login(username, password)
+            if user_data:
+                sessions[self.client_address[0]] = user_data
+                redirect(self, '/home.html')
             else:
                 redirect(self, '/login_screen.html?error=1')
 
-        # Handle registration form submission (signup)
         elif self.path == '/signup.html':
             first_name = post_data.get('first_name', [''])[0]
             last_name = post_data.get('last_name', [''])[0]
@@ -74,24 +95,36 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             password = post_data.get('password', [''])[0]
             confirm_password = post_data.get('confirm_password', [''])[0]
 
-            # Check if passwords match
             if password != confirm_password:
                 redirect(self, '/signup.html?error=password_mismatch')
                 return
 
-            # Add user with additional fields
             if handle_signup(username, password, first_name, last_name, email):
-                redirect(self, '/home.html')  # Redirect to home page after successful signup
+                redirect(self, '/home.html')
             else:
                 redirect(self, '/signup.html?error=user_exists')
 
-# Function to parse POST data
+    def serve_account_page(self, user_data):
+        # Load the HTML content from the template file
+        with open(os.path.join(TEMPLATES_DIR, "account.html"), 'r', encoding='utf-8') as file:
+            html_content = file.read()
+
+        # Replace placeholders in HTML with actual user data
+        html_content = html_content.replace("John Doe", f"{user_data['first_name']} {user_data['last_name']}")
+        html_content = html_content.replace("johndoe@example.com", user_data['email'])
+
+        # Send response with modified HTML
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(html_content.encode('utf-8'))
+
+# Helper functions
 def parse_post_data(handler):
     content_length = int(handler.headers['Content-Length'])
     post_data = handler.rfile.read(content_length)
     return urllib.parse.parse_qs(post_data.decode('utf-8'))
 
-# Function to handle redirection
 def redirect(handler, location):
     handler.send_response(302)
     handler.send_header('Location', location)
