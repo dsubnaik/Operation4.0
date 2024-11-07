@@ -9,9 +9,8 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: #e5e3e6; /* Matching the background color */
+            background-color: #e5e3e6;
         }
-
         .header {
             background-color: white;
             padding: 10px 0;
@@ -25,19 +24,16 @@
             align-items: center;
             padding: 0 20px;
         }
-
         .app-name {
             font-size: 22px;
             color: black;
             font-weight: bold;
         }
-
         .header nav {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
         }
-
         .header nav a {
             color: black;
             padding: 14px 20px;
@@ -45,17 +41,14 @@
             font-size: 18px;
             text-align: center;
         }
-
         .header nav a:hover {
             background-color: #575757;
             color: white;
         }
-
         .header nav a.active {
             background-color: #636060;
             color: white;
         }
-
         .main-content {
             margin-top: 80px;
             padding: 20px;
@@ -63,12 +56,10 @@
             margin-left: auto;
             margin-right: auto;
         }
-
         h1, h2 {
             color: #333;
             text-align: center;
         }
-
         .progress-section {
             background-color: white;
             padding: 20px;
@@ -76,21 +67,18 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-
         .progress-section h3 {
             margin-bottom: 10px;
             color: #333;
         }
-
         .progress-bar-container {
             width: 100%;
             background-color: #ddd;
             border-radius: 20px;
             overflow: hidden;
             margin-bottom: 15px;
-            position: relative; /* To position the text inside the bar */
+            position: relative;
         }
-
         .progress-bar {
             height: 20px;
             background-color: #4caf50;
@@ -98,7 +86,6 @@
             transition: width 0.4s;
             position: relative;
         }
-
         .progress-value {
             position: absolute;
             top: 0;
@@ -112,13 +99,11 @@
             font-weight: bold;
             font-size: 14px;
         }
-
         .chart-container {
             display: flex;
             justify-content: space-between;
             gap: 20px;
         }
-
         .chart {
             background-color: #fafafa;
             padding: 20px;
@@ -126,12 +111,10 @@
             border: 1px solid #ddd;
             width: 48%;
         }
-
         .chart canvas {
             width: 100%;
             height: 200px;
         }
-
     </style>
 </head>
 <body>
@@ -160,7 +143,7 @@
             <h3>Study Time Progress</h3>
             <div class="progress-bar-container">
                 <div class="progress-bar" style="width: 55%;">
-                    <div class="progress-value">5h 30m</div> <!-- Display hours and minutes inside the bar -->
+                    <div class="progress-value">5h 30m</div> 
                 </div>
             </div>
         </div>
@@ -170,7 +153,7 @@
             <h3>Quiz Performance</h3>
             <div class="progress-bar-container">
                 <div class="progress-bar" style="width: 80%; background-color: #ff9800;">
-                    <div class="progress-value">80% quizzes passed</div> <!-- Display the percentage inside the bar -->
+                    <div class="progress-value">80% quizzes passed</div>
                 </div>
             </div>
         </div>
@@ -180,43 +163,41 @@
             <!-- Study Time Chart -->
             <div class="chart">
                 <h3>Study Time Overview</h3>
-                <canvas id="studyTimeChart"></canvas> <!-- Placeholder for a study time chart -->
+                <canvas id="studyTimeChart"></canvas>
             </div>
 
             <!-- Areas of Improvement Chart -->
             <div class="chart">
                 <h3>Areas of Improvement</h3>
-                <canvas id="improvementChart"></canvas> <!-- Placeholder for areas of improvement chart -->
+                <canvas id="improvementChart"></canvas>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Sample chart configuration for Study Time Overview
         const ctx1 = document.getElementById('studyTimeChart').getContext('2d');
         const studyTimeChart = new Chart(ctx1, {
-            type: 'line', // You can choose different chart types like 'line', 'bar', 'pie'
+            type: 'line', 
             data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], // Example labels
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
                 datasets: [{
                     label: 'Study Hours',
-                    data: [5, 10, 8, 12], // Example data
+                    data: [5, 10, 8, 12],
                     borderColor: '#4caf50',
                     fill: false
                 }]
             }
         });
 
-        // Sample chart configuration for Areas of Improvement
         const ctx2 = document.getElementById('improvementChart').getContext('2d');
         const improvementChart = new Chart(ctx2, {
-            type: 'bar', // Example: bar chart for areas of improvement
+            type: 'bar', 
             data: {
-                labels: ['Math', 'Science', 'History', 'English'], // Example subjects
+                labels: ['Math', 'Science', 'History', 'English'],
                 datasets: [{
                     label: 'Performance Level',
-                    data: [75, 90, 60, 85], // Example data representing performance
+                    data: [75, 90, 60, 85],
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50']
                 }]
             }

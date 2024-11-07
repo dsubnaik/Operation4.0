@@ -1,14 +1,18 @@
 import http.server
 import socketserver
-from authentication import handle_login, handle_signup
+from authentication import handle_login, handle_signup, fetch_user_details
+from achievements import initialize_achievements, get_user_achievements
+from progress_tracker import initialize_progress_tables, get_user_progress
+from effort_tracker import initialize_effort_levels_table, get_user_effort_levels
+from resource_handler import initialize_resources_table, get_resources
 from userDatabase import initialize_database
 import urllib
 import os
 import mimetypes
 
 PORT = 8000
-TEMPLATES_DIR = 'templates'  # Directory for HTML templates
-CSS_DIR = 'css'               # Directory for CSS files
+TEMPLATES_DIR = 'templates'
+CSS_DIR = 'css'
 
 # Session dictionary to manage user sessions based on IP address
 sessions = {}
@@ -29,7 +33,6 @@ def serve_page(handler, file_path, content_type='text/html'):
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
-        # Serve HTML pages from templates directory
         if self.path == "/" or self.path == "/splashpage.html":
             serve_page(self, os.path.join(TEMPLATES_DIR, "splashpage.html"))
         elif self.path == "/home.html":
@@ -47,13 +50,29 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 redirect(self, '/login_screen.html')
         elif self.path == "/achievements.html":
-            serve_page(self, os.path.join(TEMPLATES_DIR, "achievements.html"))
+            if self.client_address[0] in sessions:
+                user_data = sessions[self.client_address[0]]
+                self.serve_achievements_page(user_data['id'])
+            else:
+                redirect(self, '/login_screen.html')
         elif self.path == "/progress.html":
-            serve_page(self, os.path.join(TEMPLATES_DIR, "progress.html"))
+            if self.client_address[0] in sessions:
+                user_data = sessions[self.client_address[0]]
+                self.serve_progress_page(user_data['id'])
+            else:
+                redirect(self, '/login_screen.html')
         elif self.path == "/effort-levels.html":
-            serve_page(self, os.path.join(TEMPLATES_DIR, "effort-levels.html"))
+            if self.client_address[0] in sessions:
+                user_data = sessions[self.client_address[0]]
+                self.serve_effort_levels_page(user_data['id'])
+            else:
+                redirect(self, '/login_screen.html')
         elif self.path == "/recommended-sources.html":
-            serve_page(self, os.path.join(TEMPLATES_DIR, "recommended-sources.html"))
+            if self.client_address[0] in sessions:
+                user_data = sessions[self.client_address[0]]
+                self.serve_recommended_resources_page(user_data['id'])
+            else:
+                redirect(self, '/login_screen.html')
         elif self.path == "/signup.html":
             serve_page(self, os.path.join(TEMPLATES_DIR, "signup.html"))
         elif self.path == "/study.html":
@@ -63,11 +82,10 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 del sessions[self.client_address[0]]
             redirect(self, '/login_screen.html')
         elif self.path.startswith("/css/"):
-            # Serve CSS files from the css directory
-            file_path = os.path.join(CSS_DIR, self.path[5:])  # Strip the `/css/` prefix
+            file_path = os.path.join(CSS_DIR, self.path[5:])
             content_type, _ = mimetypes.guess_type(file_path)
             if content_type is None:
-                content_type = 'text/css'  # Default to CSS if not identified
+                content_type = 'text/css'
             serve_page(self, file_path, content_type)
         else:
             super().do_GET()
@@ -75,7 +93,6 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         post_data = parse_post_data(self)
 
-        # Handle login form submission
         if self.path == '/login_screen.html':
             username = post_data.get('username', [''])[0]
             password = post_data.get('password', [''])[0]
@@ -105,19 +122,101 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 redirect(self, '/signup.html?error=user_exists')
 
     def serve_account_page(self, user_data):
-        # Load the HTML content from the template file
+        user_info = fetch_user_details(user_data["username"])
+
         with open(os.path.join(TEMPLATES_DIR, "account.html"), 'r', encoding='utf-8') as file:
             html_content = file.read()
+            html_content = html_content.replace("John Doe", f"{user_info['first_name']} {user_info['last_name']}")
+            html_content = html_content.replace("johndoe@example.com", user_info['email'])
 
-        # Replace placeholders in HTML with actual user data
-        html_content = html_content.replace("John Doe", f"{user_data['first_name']} {user_data['last_name']}")
-        html_content = html_content.replace("johndoe@example.com", user_data['email'])
-
-        # Send response with modified HTML
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write(html_content.encode('utf-8'))
+
+    def serve_achievements_page(self, user_id):
+        unlocked_achievements = get_user_achievements(user_id)
+
+        achievements_html = "".join(
+            f"<div class='achievement-card'><h3>{name}</h3><p>{description}</p><div class='achievement-badge'>{badge}</div></div>"
+            for name, description, badge in unlocked_achievements
+        )
+
+        with open(os.path.join(TEMPLATES_DIR, "achievements.html"), "r", encoding="utf-8") as file:
+            html_content = file.read().replace("<!-- ACHIEVEMENTS_PLACEHOLDER -->", achievements_html)
+
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(html_content.encode("utf-8"))
+
+    def serve_progress_page(self, user_id):
+        progress_data = get_user_progress(user_id)
+
+        # Extract values or set default messages
+        study_time_display = progress_data.get('study_time', 'No data recorded')
+        study_time_percentage = f"{progress_data.get('study_time_percentage', 0)}%"
+        quiz_performance_display = progress_data.get('quiz_performance', 'No quizzes taken')
+        quiz_performance_percentage = f"{progress_data.get('quiz_performance_percentage', 0)}%"
+
+        with open(os.path.join(TEMPLATES_DIR, "progress.html"), "r", encoding="utf-8") as file:
+            html_content = file.read()
+            html_content = html_content.replace("{{STUDY_TIME_PERCENTAGE}}", study_time_percentage)
+            html_content = html_content.replace("{{STUDY_TIME_DISPLAY}}", study_time_display)
+            html_content = html_content.replace("{{QUIZ_PERFORMANCE_PERCENTAGE}}", quiz_performance_percentage)
+            html_content = html_content.replace("{{QUIZ_PERFORMANCE_DISPLAY}}", quiz_performance_display)
+
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(html_content.encode("utf-8"))
+
+    def serve_effort_levels_page(self, user_id):
+        effort_data = get_user_effort_levels(user_id)
+
+        if not effort_data:
+            study_frequency = "No data recorded yet"
+            study_duration = "No data recorded yet"
+            focus_areas_html = "<li>No data recorded yet</li>"
+            study_frequency_percentage = "0%"
+            study_duration_percentage = "0%"
+        else:
+            study_frequency = f"{effort_data['study_frequency']} days/week"
+            hours, minutes = divmod(effort_data['study_duration'], 60)
+            study_duration = f"{hours}h {minutes}m"
+            focus_areas_html = "".join(
+                f"<li><span>{subject}</span> - {percentage}% of study time</li>"
+                for subject, percentage in effort_data['focus_areas'].items()
+            )
+            study_frequency_percentage = f"{effort_data['study_frequency'] * 10}%"
+            study_duration_percentage = f"{min(effort_data['study_duration'] / 10, 100)}%"
+
+        with open(os.path.join(TEMPLATES_DIR, "effort-levels.html"), "r", encoding="utf-8") as file:
+            html_content = file.read()
+            html_content = html_content.replace("60%", study_frequency_percentage).replace("3 days/week", study_frequency)
+            html_content = html_content.replace("75%", study_duration_percentage).replace("7h 30m", study_duration)
+            html_content = html_content.replace("<ul></ul>", f"<ul>{focus_areas_html}</ul>")
+
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(html_content.encode("utf-8"))
+
+    def serve_recommended_resources_page(self, user_id):
+        resources = get_resources()
+
+        resources_html = "".join(
+            f"<div class='resource-card'><span class='resource-type'>{resource['type']}</span><h3>{resource['title']}</h3><p>{resource['description']}</p><p><a href='{resource['link']}' target='_blank'>Learn more</a></p><span class='subject-badge'>{resource['subject']}</span></div>"
+            for resource in resources
+        )
+
+        with open(os.path.join(TEMPLATES_DIR, "recommended-sources.html"), "r", encoding="utf-8") as file:
+            html_content = file.read().replace("<!-- RESOURCES_PLACEHOLDER -->", resources_html)
+
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(html_content.encode("utf-8"))
 
 # Helper functions
 def parse_post_data(handler):
@@ -130,8 +229,12 @@ def redirect(handler, location):
     handler.send_header('Location', location)
     handler.end_headers()
 
-# Initialize the user database
+# Initialize the user, achievements, progress tracking, effort levels, and resources tables
 initialize_database()
+initialize_achievements()
+initialize_progress_tables()
+initialize_effort_levels_table()
+initialize_resources_table()
 
 # Start the HTTP server
 with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
