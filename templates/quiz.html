@@ -131,52 +131,17 @@
     <div class="main-content">
         <h1>Quiz: Test Your Knowledge</h1>
 
-        <!-- Quiz Question 1 -->
-        <div class="quiz-card">
-            <h3>Question 1: What is the capital of France?</h3>
-            <form>
-                <label>
-                    <input type="radio" name="q1" value="a">
-                    A) Berlin
-                </label>
-                <label>
-                    <input type="radio" name="q1" value="b">
-                    B) Madrid
-                </label>
-                <label>
-                    <input type="radio" name="q1" value="c">
-                    C) Paris
-                </label>
-                <label>
-                    <input type="radio" name="q1" value="d">
-                    D) Rome
-                </label>
-                <button type="submit" class="submit-btn">Submit Answer</button>
-            </form>
-        </div>
+        <!-- Study Set Selection -->
+        <section class="study-set-options">
+            <button id="load-study-sets" onclick="fetchStudySets()">Load Study Sets</button>
+            <div id="study-set-buttons-container" aria-live="polite" aria-relevant="additions">
+                <!-- Dynamic study set buttons will be inserted here -->
+            </div>
+        </section>
 
-        <!-- Quiz Question 2 -->
-        <div class="quiz-card">
-            <h3>Question 2: Which of the following is a mammal?</h3>
-            <form>
-                <label>
-                    <input type="radio" name="q2" value="a">
-                    A) Shark
-                </label>
-                <label>
-                    <input type="radio" name="q2" value="b">
-                    B) Dolphin
-                </label>
-                <label>
-                    <input type="radio" name="q2" value="c">
-                    C) Crocodile
-                </label>
-                <label>
-                    <input type="radio" name="q2" value="d">
-                    D) Eagle
-                </label>
-                <button type="submit" class="submit-btn">Submit Answer</button>
-            </form>
+        <!-- Quiz Questions Container -->
+        <div id="quiz-questions-container">
+            <!-- Dynamic quiz questions will be inserted here -->
         </div>
 
         <!-- Quiz Result -->
@@ -186,17 +151,105 @@
     </div>
 
     <script>
-        // Placeholder script to simulate quiz result functionality
-        document.querySelectorAll('.quiz-card form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent actual form submission
-                document.getElementById('quizResult').textContent = 'Your answers have been submitted. Please wait for results!';
-            });
-        });
+        // Function to fetch study sets from the server
+        async function fetchStudySets() {
+            try {
+                const response = await fetch('/api/get_study_sets');
+                if (response.ok) {
+                    const studySets = await response.json();
+                    const container = document.getElementById("study-set-buttons-container");
+                    container.innerHTML = ""; // Clear previous buttons
+
+                    // Create a button for each study set
+                    studySets.forEach(set => {
+                        const button = document.createElement("button");
+                        button.textContent = set.name;
+                        button.onclick = () => loadQuiz(set.id);
+                        container.appendChild(button);
+                    });
+                } else {
+                    console.error("Failed to fetch study sets.");
+                }
+            } catch (error) {
+                console.error("Error fetching study sets:", error);
+            }
+        }
+
+        // Function to load quiz questions based on the study set
+        async function loadQuiz(studySetId) {
+            try {
+                const response = await fetch(`/api/get_quiz_questions?study_set_id=${studySetId}`);
+                if (response.ok) {
+                    const questions = await response.json();
+                    const quizContainer = document.getElementById("quiz-questions-container");
+                    quizContainer.innerHTML = ""; // Clear previous questions
+
+                    // Display each question in the quiz container
+                    questions.forEach((question, index) => {
+                        const quizCard = document.createElement("div");
+                        quizCard.className = "quiz-card";
+
+                        const questionTitle = document.createElement("h3");
+                        questionTitle.textContent = `Question ${index + 1}: ${question.question}`;
+                        quizCard.appendChild(questionTitle);
+
+                        // Create form for question choices
+                        const form = document.createElement("form");
+                        form.onsubmit = (e) => handleSubmit(e, studySetId, question.id); // Unique question ID
+
+                        question.options.forEach(option => {
+                            const label = document.createElement("label");
+                            const radio = document.createElement("input");
+                            radio.type = "radio";
+                            radio.name = `q${question.id}`;
+                            radio.value = option;
+                            label.appendChild(radio);
+                            label.append(option);
+                            form.appendChild(label);
+                        });
+
+                        const submitBtn = document.createElement("button");
+                        submitBtn.type = "submit";
+                        submitBtn.className = "submit-btn";
+                        submitBtn.textContent = "Submit Answer";
+                        form.appendChild(submitBtn);
+                        quizCard.appendChild(form);
+
+                        quizContainer.appendChild(quizCard);
+                    });
+                } else {
+                    console.error("Failed to load quiz questions.");
+                }
+            } catch (error) {
+                console.error("Error loading quiz questions:", error);
+            }
+        }
+
+        // Function to handle answer submission
+        async function handleSubmit(event, studySetId, questionId) {
+            event.preventDefault();
+            const selectedOption = event.target.querySelector("input[type='radio']:checked");
+            if (selectedOption) {
+                const answer = selectedOption.value;
+                try {
+                    const response = await fetch('/api/submit_answer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ study_set_id: studySetId, question_id: questionId, answer })
+                    });
+                    const result = await response.json();
+                    document.getElementById("quizResult").textContent = result.message;
+                } catch (error) {
+                    console.error("Error submitting answer:", error);
+                }
+            } else {
+                alert("Please select an answer.");
+            }
+        }
 
         // Exit button functionality
         function exitQuiz() {
-            window.location.href = '/home.html'; // Replace with the URL where you want to redirect on exit
+            window.location.href = '/home.html';
         }
     </script>
 

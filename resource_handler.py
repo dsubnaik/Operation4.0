@@ -23,7 +23,7 @@ def initialize_resources_table():
 
     # Sample resources
     resources = [
-        ("Understanding Algebra Basics", "This article covers algebra basics.", "https://example.com/algebra-basics", "Article", "Math"),
+        ("Understanding Algebra Basics", "This article covers algebra basics.", "https://youtu.be/H58vbez_m4E?si=cd35VSzpH3kMlDvW", "Article", "Math"),
         ("The Scientific Method Explained", "Short video on the scientific method.", "https://example.com/scientific-method-video", "Video", "Science"),
         ("World History: Key Events Timeline", "Timeline of significant events in history.", "https://example.com/history-timeline", "External Link", "History"),
         ("Introduction to English Literature", "E-book covering key themes in literature.", "https://example.com/english-literature-ebook", "E-book", "English")
@@ -53,7 +53,6 @@ def get_resources():
         for title, description, link, resource_type, subject in resources
     ]
 
-# Generate HTML for resources
 def generate_resources_html():
     resources = get_resources()
     resources_html = ""
