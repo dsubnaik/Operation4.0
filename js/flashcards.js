@@ -1,166 +1,202 @@
+// DOM Elements
 const container = document.querySelector(".container");
 const addQuestionCard = document.getElementById("add-question-card");
-const cardButton = document.getElementById("save-btn");
-const question = document.getElementById("question");
-const answer = document.getElementById("answer");
+const saveButton = document.getElementById("save-btn");
+const questionInput = document.getElementById("question");
+const answerInput = document.getElementById("answer");
 const errorMessage = document.getElementById("error");
-const addQuestion = document.getElementById("add-flashcard");
-const closeBtn = document.getElementById("close-btn");
-const createStudySetBtn = document.getElementById("create-study-set");
-const studySetDropdown = document.getElementById("study-set-dropdown");
-let currentStudySet = "default"; // Track the current study set
-let editBool = false;
+const addFlashcardButton = document.getElementById("add-flashcard");
+const closeButton = document.getElementById("close-btn");
+const createStudySetButton = document.getElementById("create-study-set");
+const studySetButtonsContainer = document.getElementById("study-set-buttons-container");
+const cardListContainer = document.querySelector(".card-list-container");
 
-// Initialize and load study sets on page load
-window.onload = () => {
-  populateStudySetDropdown();
-  loadStudySet(currentStudySet); // Load the default study set initially
-};
+let currentStudySet = null; // Track the active study set
 
-// Populate dropdown with study sets
-function populateStudySetDropdown() {
-  const studySets = JSON.parse(localStorage.getItem("studySets")) || ["default"];
-  studySetDropdown.innerHTML = ""; // Clear existing options
-  studySets.forEach((setName) => {
-    const option = document.createElement("option");
-    option.value = setName;
-    option.textContent = setName;
-    studySetDropdown.appendChild(option);
-  });
-  studySetDropdown.value = currentStudySet; // Set dropdown to current set
-}
+// Initialize on page load
+document.addEventListener("DOMContentLoaded", () => {
+  loadStudySets();
+});
 
-// Event to create a new study set
-createStudySetBtn.addEventListener("click", () => {
-  const newSetName = prompt("Enter a name for the new study set:");
-  if (newSetName) {
-    const studySets = JSON.parse(localStorage.getItem("studySets")) || ["default"];
-    if (!studySets.includes(newSetName)) {
-      studySets.push(newSetName);
-      localStorage.setItem("studySets", JSON.stringify(studySets));
-      populateStudySetDropdown();
-      currentStudySet = newSetName;
-      loadStudySet(newSetName);
+// Fetch and generate study set buttons
+async function loadStudySets() {
+  try {
+    const response = await fetch('/api/get_study_sets');
+    if (response.ok) {
+      const studySets = await response.json();
+      studySetButtonsContainer.innerHTML = ""; // Clear existing buttons
+      studySets.forEach(set => {
+        const button = document.createElement("button");
+        button.textContent = set.name;
+        button.classList.add("load-set-btn");
+        if (set.id === currentStudySet) {
+          button.classList.add("active-set");
+        }
+        button.addEventListener("click", () => handleStudySetClick(button, set.id));
+        studySetButtonsContainer.appendChild(button);
+      });
     } else {
-      alert("A study set with that name already exists.");
+      console.error("Failed to fetch study sets.");
     }
+  } catch (error) {
+    console.error("Error fetching study sets:", error);
   }
-});
-
-// Load an existing study set
-studySetDropdown.addEventListener("change", () => {
-  currentStudySet = studySetDropdown.value;
-  loadStudySet(currentStudySet);
-});
-
-// Load cards from a study set
-function loadStudySet(setName) {
-  document.querySelector(".card-list-container").innerHTML = ""; // Clear existing cards
-  const flashcards = JSON.parse(localStorage.getItem(setName)) || [];
-  flashcards.forEach((flashcard) => addFlashcard(flashcard.question, flashcard.answer));
 }
 
-// Save flashcard to the current study set in localStorage
-function saveFlashcardToSet(setName, question, answer) {
-  const flashcards = JSON.parse(localStorage.getItem(setName)) || [];
-  flashcards.push({ question, answer });
-  localStorage.setItem(setName, JSON.stringify(flashcards));
+// Handle study set button click
+function handleStudySetClick(button, studySetId) {
+  // Remove active class from all study set buttons
+  document.querySelectorAll(".load-set-btn").forEach(btn => btn.classList.remove("active-set"));
+  
+  // Set clicked button as active
+  button.classList.add("active-set");
+  currentStudySet = studySetId;
+
+  // Load flashcards for the selected study set
+  loadFlashcards(studySetId);
 }
 
-// Add question when user clicks 'Add Flashcard' button
-addQuestion.addEventListener("click", () => {
-  container.classList.add("hide");
-  question.value = "";
-  answer.value = "";
+// Fetch and display flashcards for the selected study set
+async function loadFlashcards(studySetId) {
+  try {
+    const response = await fetch(`/api/get_flashcards?study_set_id=${studySetId}`);
+    if (response.ok) {
+      const flashcards = await response.json();
+      cardListContainer.innerHTML = ""; // Clear existing flashcards
+      flashcards.forEach(card => addFlashcard(card.question, card.answer));
+    } else {
+      console.error("Failed to fetch flashcards.");
+    }
+  } catch (error) {
+    console.error("Error loading flashcards:", error);
+  }
+}
+
+// Add Flashcard to the DOM
+function addFlashcard(questionText, answerText) {
+  const flashcard = document.createElement("div");
+  flashcard.classList.add("card");
+
+  // Question text
+  const questionDiv = document.createElement("p");
+  questionDiv.classList.add("question-div");
+  questionDiv.textContent = questionText;
+
+  // Answer text (initially hidden)
+  const answerDiv = document.createElement("p");
+  answerDiv.classList.add("answer-div", "hide");
+  answerDiv.textContent = answerText;
+
+  // Show/Hide button
+  const toggleAnswerButton = document.createElement("button");
+  toggleAnswerButton.classList.add("show-hide-btn");
+  toggleAnswerButton.textContent = "Show/Hide";
+  toggleAnswerButton.addEventListener("click", () => answerDiv.classList.toggle("hide"));
+
+  // Edit button
+  const editButton = document.createElement("button");
+  editButton.classList.add("edit");
+  editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+  editButton.addEventListener("click", () => {
+    questionInput.value = questionText;
+    answerInput.value = answerText;
+    saveButton.textContent = "Update";
+    addQuestionCard.classList.remove("hide");
+  });
+
+  // Delete button
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("delete");
+  deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+  deleteButton.addEventListener("click", () => {
+    deleteFlashcard(questionText);
+    flashcard.remove();
+  });
+
+  // Button container
+  const buttonsCon = document.createElement("div");
+  buttonsCon.classList.add("buttons-con");
+  buttonsCon.append(editButton, deleteButton);
+
+  // Append elements to the flashcard div
+  flashcard.append(questionDiv, toggleAnswerButton, answerDiv, buttonsCon);
+  cardListContainer.appendChild(flashcard);
+}
+
+// Add or update flashcard in the database
+saveButton.addEventListener("click", async () => {
+  const question = questionInput.value.trim();
+  const answer = answerInput.value.trim();
+
+  if (question === "" || answer === "") {
+    errorMessage.classList.remove("hide");
+    return;
+  }
+  errorMessage.classList.add("hide");
+
+  try {
+    await fetch('/api/add_flashcard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ study_set_id: currentStudySet, question, answer })
+    });
+    loadFlashcards(currentStudySet);
+  } catch (error) {
+    console.error("Error saving flashcard:", error);
+  }
+
+  questionInput.value = "";
+  answerInput.value = "";
+  addQuestionCard.classList.add("hide");
+});
+
+// Open flashcard input form
+addFlashcardButton.addEventListener("click", () => {
+  questionInput.value = "";
+  answerInput.value = "";
+  saveButton.textContent = "Save";
   addQuestionCard.classList.remove("hide");
 });
 
-// Hide Create flashcard Card
-closeBtn.addEventListener("click", () => {
-  container.classList.remove("hide");
+// Close flashcard input form
+closeButton.addEventListener("click", () => {
   addQuestionCard.classList.add("hide");
-  errorMessage.classList.add("hide");
-  editBool = false;
 });
 
-// Submit Question
-cardButton.addEventListener("click", () => {
-  const tempQuestion = question.value.trim();
-  const tempAnswer = answer.value.trim();
-  if (!tempQuestion || !tempAnswer) {
-    errorMessage.classList.remove("hide");
-  } else {
-    errorMessage.classList.add("hide");
-    container.classList.remove("hide");
-    addQuestionCard.classList.add("hide");
-    addFlashcard(tempQuestion, tempAnswer);
-    saveFlashcardToSet(currentStudySet, tempQuestion, tempAnswer);
-    question.value = "";
-    answer.value = "";
+// Delete flashcard from the database
+async function deleteFlashcard(question) {
+  try {
+    await fetch('/api/delete_flashcard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ study_set_id: currentStudySet, question })
+    });
+    loadFlashcards(currentStudySet);
+  } catch (error) {
+    console.error("Error deleting flashcard:", error);
   }
-});
-
-// Function to add flashcard to the view
-function addFlashcard(questionText, answerText) {
-  const listCard = document.querySelector(".card-list-container");
-  const div = document.createElement("div");
-  div.classList.add("card");
-
-  // Question
-  div.innerHTML = `<p class="question-div">${questionText}</p>`;
-
-  // Answer
-  const displayAnswer = document.createElement("p");
-  displayAnswer.classList.add("answer-div", "hide");
-  displayAnswer.innerText = answerText;
-
-  // Link to show/hide answer
-  const link = document.createElement("a");
-  link.href = "#";
-  link.className = "show-hide-btn";
-  link.innerText = "Show/Hide";
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    displayAnswer.classList.toggle("hide");
-  });
-
-  div.appendChild(link);
-  div.appendChild(displayAnswer);
-
-  // Edit button
-  const buttonsCon = document.createElement("div");
-  buttonsCon.classList.add("buttons-con");
-  const editButton = document.createElement("button");
-  editButton.className = "edit";
-  editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
-  editButton.addEventListener("click", () => {
-    editBool = true;
-    modifyElement(editButton, true);
-    addQuestionCard.classList.remove("hide");
-  });
-  buttonsCon.appendChild(editButton);
-
-  // Delete Button
-  const deleteButton = document.createElement("button");
-  deleteButton.className = "delete";
-  deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
-  deleteButton.addEventListener("click", () => {
-    div.remove();
-  });
-  buttonsCon.appendChild(deleteButton);
-
-  div.appendChild(buttonsCon);
-  listCard.appendChild(div);
 }
 
-// Modify Elements
-const modifyElement = (element, edit = false) => {
-  const parentDiv = element.closest(".card");
-  const parentQuestion = parentDiv.querySelector(".question-div").innerText;
-  if (edit) {
-    const parentAnswer = parentDiv.querySelector(".answer-div").innerText;
-    answer.value = parentAnswer;
-    question.value = parentQuestion;
-    parentDiv.remove();
+// Create new study set
+createStudySetButton.addEventListener("click", async () => {
+  const newSetName = prompt("Enter a name for the new study set:");
+  if (!newSetName) return;
+
+  try {
+    const response = await fetch('/api/add_study_set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ set_name: newSetName })
+    });
+    if (response.ok) {
+      const newStudySet = await response.json();
+      currentStudySet = newStudySet.id;
+      loadStudySets(); // Reload study set buttons
+      loadFlashcards(currentStudySet); // Load flashcards for the new set
+    } else {
+      alert("A study set with that name already exists.");
+    }
+  } catch (error) {
+    console.error("Error creating new study set:", error);
   }
-};
+});

@@ -142,8 +142,8 @@
         <div class="progress-section">
             <h3>Study Time Progress</h3>
             <div class="progress-bar-container">
-                <div class="progress-bar" style="width: 55%;">
-                    <div class="progress-value">5h 30m</div> 
+                <div class="progress-bar" style="width: {{STUDY_TIME_PERCENTAGE}}%;">
+                    <div class="progress-value">{{STUDY_TIME_DISPLAY}}</div> 
                 </div>
             </div>
         </div>
@@ -152,8 +152,8 @@
         <div class="progress-section">
             <h3>Quiz Performance</h3>
             <div class="progress-bar-container">
-                <div class="progress-bar" style="width: 80%; background-color: #ff9800;">
-                    <div class="progress-value">80% quizzes passed</div>
+                <div class="progress-bar" style="width: {{QUIZ_PERFORMANCE_PERCENTAGE}}%; background-color: #ff9800;">
+                    <div class="progress-value">{{QUIZ_PERFORMANCE_DISPLAY}}</div>
                 </div>
             </div>
         </div>

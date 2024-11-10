@@ -1,12 +1,11 @@
 import sqlite3
 from datetime import datetime
-import json
 
 # Connect to the database
 def get_connection():
     return sqlite3.connect('users.db')
 
-# Initialize the flashcards table
+# Initialize the flashcards and study_sets tables
 def initialize_flashcards_table():
     conn = get_connection()
     cursor = conn.cursor()
@@ -82,3 +81,34 @@ def get_flashcards(study_set_id):
     flashcards = cursor.fetchall()
     conn.close()
     return [{'question': row[0], 'answer': row[1]} for row in flashcards]
+
+# Delete a study set and all associated flashcards
+def delete_study_set(study_set_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM flashcards WHERE study_set_id = ?', (study_set_id,))
+    cursor.execute('DELETE FROM study_sets WHERE id = ?', (study_set_id,))
+    conn.commit()
+    conn.close()
+
+# Delete a specific flashcard from a study set
+def delete_flashcard(study_set_id, question):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    DELETE FROM flashcards WHERE study_set_id = ? AND question = ?
+    ''', (study_set_id, question))
+    conn.commit()
+    conn.close()
+
+# Update a flashcard within a specific study set
+def update_flashcard(study_set_id, old_question, new_question, new_answer):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    UPDATE flashcards
+    SET question = ?, answer = ?
+    WHERE study_set_id = ? AND question = ?
+    ''', (new_question, new_answer, study_set_id, old_question))
+    conn.commit()
+    conn.close()

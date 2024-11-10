@@ -4,7 +4,7 @@ import sqlite3
 def get_connection():
     return sqlite3.connect('users.db')
 
-# Function to initialize the achievements and user_achievements tables
+# Initialize achievements and user_achievements tables
 def initialize_achievements():
     conn = get_connection()
     cursor = conn.cursor()
@@ -19,7 +19,7 @@ def initialize_achievements():
     )
     ''')
 
-    # Create user_achievements table
+    # Create user_achievements table with a unique constraint to prevent duplicates
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS user_achievements (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +27,8 @@ def initialize_achievements():
         achievement_id INTEGER,
         unlock_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (achievement_id) REFERENCES achievements(id)
+        FOREIGN KEY (achievement_id) REFERENCES achievements(id),
+        UNIQUE (user_id, achievement_id)  -- Prevent duplicate achievements for the same user
     )
     ''')
 
@@ -35,7 +36,6 @@ def initialize_achievements():
     achievements = [
         ("First Quiz Completed", "Congratulations on completing your first quiz!", "Beginner Level"),
         ("First Flashcard Created", "You've created your first flashcard.", "Flashcard Novice"),
-        # Add other achievements as needed
     ]
     cursor.executemany('''
     INSERT OR IGNORE INTO achievements (name, description, badge)
@@ -46,13 +46,13 @@ def initialize_achievements():
     conn.close()
     print("Achievements tables initialized.")
 
-# Function to fetch unlocked achievements for a specific user
+# Fetch unlocked achievements for a specific user
 def get_user_achievements(user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT a.name, a.description, a.badge
+    SELECT DISTINCT a.name, a.description, a.badge
     FROM achievements a
     JOIN user_achievements ua ON a.id = ua.achievement_id
     WHERE ua.user_id = ?
@@ -62,11 +62,13 @@ def get_user_achievements(user_id):
     conn.close()
     return achievements
 
-# Function to check and unlock an achievement for a user
+
+# Check and unlock an achievement for a user
 def unlock_achievement(user_id, achievement_id):
     conn = get_connection()
     cursor = conn.cursor()
 
+    # Use INSERT OR IGNORE to avoid duplicates
     cursor.execute('''
     INSERT OR IGNORE INTO user_achievements (user_id, achievement_id)
     VALUES (?, ?)
@@ -75,3 +77,22 @@ def unlock_achievement(user_id, achievement_id):
     conn.commit()
     conn.close()
     print(f"Achievement {achievement_id} unlocked for user {user_id}.")
+    
+# Cleanup duplicates in user_achievements table
+def clean_up_duplicates():
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Delete duplicate entries while keeping the earliest unlock date for each user/achievement pair
+    cursor.execute('''
+    DELETE FROM user_achievements
+    WHERE id NOT IN (
+        SELECT MIN(id)
+        FROM user_achievements
+        GROUP BY user_id, achievement_id
+    )
+    ''')
+
+    conn.commit()
+    conn.close()
+    print("Duplicate entries removed from user_achievements table.")
