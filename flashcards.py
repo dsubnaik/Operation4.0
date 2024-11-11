@@ -115,3 +115,13 @@ def update_flashcard(study_set_id, old_question, new_question, new_answer):
     ''', (new_question, new_answer, study_set_id, old_question))
     conn.commit()
     conn.close()
+
+# Backend: Delete a specific flashcard by ID
+def delete_flashcard_from_db(flashcard_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    print("Deleting flashcard with ID:", flashcard_id)  # Log ID in the database function as well
+    cursor.execute('DELETE FROM flashcards WHERE id = ?', (flashcard_id,))
+    conn.commit()
+    conn.close()
+

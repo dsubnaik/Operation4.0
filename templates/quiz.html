@@ -223,6 +223,7 @@
 
 
         // Submit quiz answers and display result
+        // Submit quiz answers and display result
         async function submitQuiz(studySetId, questions) {
             const answers = questions.map((question, index) => {
                 const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
@@ -233,7 +234,7 @@
                 const response = await fetch('/api/submit_quiz', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ study_set_id: studySetId, answers })
+                    body: JSON.stringify({ study_set_id: studySetId, answers }) // Sending user answers
                 });
 
                 if (response.ok) {
@@ -241,11 +242,13 @@
                     document.getElementById("quizResult").textContent = `Your Score: ${result.score}/${questions.length}`;
                 } else {
                     console.error("Failed to submit quiz.");
+                    document.getElementById("quizResult").textContent = "Failed to submit quiz.";
                 }
             } catch (error) {
                 console.error("Error submitting quiz:", error);
             }
         }
+
 
         // Exit Quiz button functionality
         function exitQuiz() {

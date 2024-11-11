@@ -63,7 +63,7 @@ async function loadFlashcards(studySetId) {
     if (response.ok) {
       const flashcards = await response.json();
       cardListContainer.innerHTML = ""; // Clear existing flashcards
-      flashcards.forEach(card => addFlashcard(card.question, card.answer));
+      flashcards.forEach(card => addFlashcard(card.question, card.answer, card.id));
     } else {
       console.error("Failed to fetch flashcards.");
     }
@@ -73,9 +73,10 @@ async function loadFlashcards(studySetId) {
 }
 
 // Add Flashcard to the DOM
-function addFlashcard(questionText, answerText) {
+function addFlashcard(questionText, answerText, flashcardId) {
   const flashcard = document.createElement("div");
   flashcard.classList.add("card");
+  flashcard.setAttribute("data-id", flashcardId);
 
   // Question text
   const questionDiv = document.createElement("p");
@@ -109,7 +110,7 @@ function addFlashcard(questionText, answerText) {
   deleteButton.classList.add("delete");
   deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
   deleteButton.addEventListener("click", () => {
-    deleteFlashcard(questionText);
+    deleteFlashcard(flashcardId); // Pass the flashcardId
     flashcard.remove();
   });
 
@@ -164,18 +165,30 @@ closeButton.addEventListener("click", () => {
 });
 
 // Delete flashcard from the database
-async function deleteFlashcard(question) {
+// JavaScript: Delete flashcard from the database and remove from the DOM
+async function deleteFlashcard(flashcardId) {
+  console.log("Attempting to delete flashcard with ID:", flashcardId); // Check if this logs
   try {
-    await fetch('/api/delete_flashcard', {
+    const response = await fetch('/api/delete_flashcard', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ study_set_id: currentStudySet, question })
+      body: JSON.stringify({ flashcard_id: flashcardId })
     });
-    loadFlashcards(currentStudySet);
+
+    if (response.ok) {
+      console.log("Flashcard deleted successfully from the backend."); // Confirm success from backend
+      const flashcardElement = document.querySelector(`.card[data-id="${flashcardId}"]`);
+      if (flashcardElement) {
+        flashcardElement.remove();
+      }
+    } else {
+      console.error("Failed to delete flashcard from backend.");
+    }
   } catch (error) {
     console.error("Error deleting flashcard:", error);
   }
 }
+
 
 // Create new study set
 createStudySetButton.addEventListener("click", async () => {
