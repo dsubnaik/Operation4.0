@@ -10,7 +10,7 @@ from achievements import initialize_achievements, get_user_achievements, unlock_
 from progress_tracker import initialize_progress_tables, get_user_progress
 from effort_tracker import initialize_effort_levels_table, get_user_effort_levels
 from userDatabase import initialize_database
-from flashcards import initialize_flashcards_table, get_study_sets, get_flashcards, add_study_set, add_flashcard
+from flashcards import initialize_flashcards_table, get_study_sets, get_flashcards, add_study_set, add_flashcard, delete_flashcard_from_db
 from resource_handler import initialize_resources_table, get_resources, generate_resources_html
 
 
@@ -243,6 +243,52 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b'{"error": "Missing study set ID, question, or answer"}')
 
+        elif self.path == '/api/delete_flashcard':
+            data = parse_json_post_data(self)
+            flashcard_id = data.get('flashcard_id')
+            print("Received flashcard_id for deletion:", flashcard_id)  # Print to confirm ID received
+            if flashcard_id:
+                delete_flashcard_from_db(flashcard_id)
+                print("Flashcard deleted from database with ID:", flashcard_id)  # Confirm deletion
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"message": "Flashcard deleted successfully"}')
+            else:
+                print("Flashcard ID is missing in the request.")
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Flashcard ID required"}')
+
+        elif self.path == '/api/submit_quiz':
+            data = parse_json_post_data(self)
+            study_set_id = data.get('study_set_id')
+            answers = data.get('answers', [])
+
+            if not study_set_id or not answers:
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Study set ID and answers are required"}')
+                return
+
+            # Retrieve the correct answers from the database
+            flashcards = get_flashcards(study_set_id)
+            correct_answers = {flashcard['id']: flashcard['answer'] for flashcard in flashcards}
+
+            # Calculate the score
+            score = 0
+            for answer in answers:
+                question_id = answer['question_id']
+                user_answer = answer['answer']
+                if correct_answers.get(question_id) == user_answer:
+                    score += 1
+
+            # Return the score
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"score": score}).encode("utf-8"))
+
         elif self.path == '/login_screen.html':
             post_data = parse_post_data(self)
             username = post_data.get('username', [''])[0]
@@ -272,6 +318,10 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 redirect(self, '/home.html')
             else:
                 redirect(self, '/signup.html?error=user_exists')
+
+
+
+        
 
     def serve_account_page(self, user_data):
         user_info = fetch_user_details(user_data["username"])
