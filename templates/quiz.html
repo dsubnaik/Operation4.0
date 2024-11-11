@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -12,9 +11,9 @@
             background-color: #e5e3e6;
         }
 
-        /* Top Bar for Operation 4.0, Quiz title, and Exit button */
+        /* Top Bar */
         .top-bar {
-            background-color: white;
+            background-color: #72a37f;
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
@@ -26,17 +25,9 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .app-name {
-            font-size: 22px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .page-title {
+        .app-name, .page-title {
             font-size: 22px;
             font-weight: bold;
-            text-align: center;
-            flex-grow: 1;
         }
 
         .exit-button {
@@ -45,7 +36,6 @@
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -55,10 +45,9 @@
         }
 
         .main-content {
-            padding: 100px 20px 20px; /* Add padding to ensure content is below the top bar */
+            padding: 100px 20px 20px;
             max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: auto;
         }
 
         h1 {
@@ -66,6 +55,30 @@
             color: #333;
         }
 
+        .study-set-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Apply consistent styling to all buttons */
+        .study-set-button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .study-set-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Quiz Card for questions */
         .quiz-card {
             background-color: white;
             padding: 20px;
@@ -79,28 +92,19 @@
             color: #333;
         }
 
-        .quiz-card form {
-            margin-top: 15px;
-        }
-
         .quiz-card label {
             font-size: 16px;
             display: block;
             margin-bottom: 8px;
-            cursor: pointer;
         }
 
-        .quiz-card input[type="radio"] {
-            margin-right: 10px;
-        }
-
+        /* Submit Button */
         .submit-btn {
-            background-color: #4caf50;
+            background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
             margin-top: 15px;
             transition: background-color 0.3s;
@@ -110,17 +114,18 @@
             background-color: #45a049;
         }
 
+        /* Quiz Result Display */
         .quiz-result {
             margin-top: 20px;
-            color: #4caf50;
             font-size: 18px;
             text-align: center;
         }
+
     </style>
 </head>
-<body>
+<body onload="fetchStudySets()">
 
-    <!-- Top Bar with Operation 4.0, Quiz title, and Exit button -->
+    <!-- Top Bar -->
     <div class="top-bar">
         <div class="app-name">Operation 4.0</div>
         <div class="page-title">Quiz</div>
@@ -131,13 +136,10 @@
     <div class="main-content">
         <h1>Quiz: Test Your Knowledge</h1>
 
-        <!-- Study Set Selection -->
-        <section class="study-set-options">
-            <button id="load-study-sets" onclick="fetchStudySets()">Load Study Sets</button>
-            <div id="study-set-buttons-container" aria-live="polite" aria-relevant="additions">
-                <!-- Dynamic study set buttons will be inserted here -->
-            </div>
-        </section>
+        <!-- Study Set Buttons -->
+        <div class="study-set-options" id="study-set-buttons-container" aria-live="polite" aria-relevant="additions">
+            <!-- Dynamic study set buttons will be inserted here -->
+        </div>
 
         <!-- Quiz Questions Container -->
         <div id="quiz-questions-container">
@@ -145,13 +147,11 @@
         </div>
 
         <!-- Quiz Result -->
-        <div class="quiz-result" id="quizResult">
-            <!-- Result will be displayed here after submitting answers -->
-        </div>
+        <div class="quiz-result" id="quizResult"></div>
     </div>
 
     <script>
-        // Function to fetch study sets from the server
+        // Fetch study sets and create buttons for each
         async function fetchStudySets() {
             try {
                 const response = await fetch('/api/get_study_sets');
@@ -160,10 +160,10 @@
                     const container = document.getElementById("study-set-buttons-container");
                     container.innerHTML = ""; // Clear previous buttons
 
-                    // Create a button for each study set
                     studySets.forEach(set => {
                         const button = document.createElement("button");
                         button.textContent = set.name;
+                        button.className = "study-set-button"; // Apply consistent style class
                         button.onclick = () => loadQuiz(set.id);
                         container.appendChild(button);
                     });
@@ -175,16 +175,15 @@
             }
         }
 
-        // Function to load quiz questions based on the study set
+        // Load quiz questions based on the selected study set
         async function loadQuiz(studySetId) {
             try {
                 const response = await fetch(`/api/get_quiz_questions?study_set_id=${studySetId}`);
                 if (response.ok) {
                     const questions = await response.json();
                     const quizContainer = document.getElementById("quiz-questions-container");
-                    quizContainer.innerHTML = ""; // Clear previous questions
+                    quizContainer.innerHTML = ""; // Clear any prior questions
 
-                    // Display each question in the quiz container
                     questions.forEach((question, index) => {
                         const quizCard = document.createElement("div");
                         quizCard.className = "quiz-card";
@@ -193,30 +192,27 @@
                         questionTitle.textContent = `Question ${index + 1}: ${question.question}`;
                         quizCard.appendChild(questionTitle);
 
-                        // Create form for question choices
-                        const form = document.createElement("form");
-                        form.onsubmit = (e) => handleSubmit(e, studySetId, question.id); // Unique question ID
-
                         question.options.forEach(option => {
                             const label = document.createElement("label");
                             const radio = document.createElement("input");
                             radio.type = "radio";
-                            radio.name = `q${question.id}`;
+                            radio.name = `q${index}`;
                             radio.value = option;
                             label.appendChild(radio);
                             label.append(option);
-                            form.appendChild(label);
+                            quizCard.appendChild(label);
                         });
-
-                        const submitBtn = document.createElement("button");
-                        submitBtn.type = "submit";
-                        submitBtn.className = "submit-btn";
-                        submitBtn.textContent = "Submit Answer";
-                        form.appendChild(submitBtn);
-                        quizCard.appendChild(form);
 
                         quizContainer.appendChild(quizCard);
                     });
+
+                    // Add Submit button
+                    const submitButton = document.createElement("button");
+                    submitButton.className = "submit-btn";
+                    submitButton.textContent = "Submit Quiz";
+                    submitButton.onclick = () => submitQuiz(studySetId, questions);
+                    quizContainer.appendChild(submitButton);
+
                 } else {
                     console.error("Failed to load quiz questions.");
                 }
@@ -225,29 +221,33 @@
             }
         }
 
-        // Function to handle answer submission
-        async function handleSubmit(event, studySetId, questionId) {
-            event.preventDefault();
-            const selectedOption = event.target.querySelector("input[type='radio']:checked");
-            if (selectedOption) {
-                const answer = selectedOption.value;
-                try {
-                    const response = await fetch('/api/submit_answer', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ study_set_id: studySetId, question_id: questionId, answer })
-                    });
+
+        // Submit quiz answers and display result
+        async function submitQuiz(studySetId, questions) {
+            const answers = questions.map((question, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                return { question_id: question.id, answer: selectedOption ? selectedOption.value : null };
+            });
+
+            try {
+                const response = await fetch('/api/submit_quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ study_set_id: studySetId, answers })
+                });
+
+                if (response.ok) {
                     const result = await response.json();
-                    document.getElementById("quizResult").textContent = result.message;
-                } catch (error) {
-                    console.error("Error submitting answer:", error);
+                    document.getElementById("quizResult").textContent = `Your Score: ${result.score}/${questions.length}`;
+                } else {
+                    console.error("Failed to submit quiz.");
                 }
-            } else {
-                alert("Please select an answer.");
+            } catch (error) {
+                console.error("Error submitting quiz:", error);
             }
         }
 
-        // Exit button functionality
+        // Exit Quiz button functionality
         function exitQuiz() {
             window.location.href = '/home.html';
         }

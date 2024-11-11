@@ -76,11 +76,14 @@ def get_flashcards(study_set_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT question, answer FROM flashcards WHERE study_set_id = ?
+    SELECT id, question, answer FROM flashcards WHERE study_set_id = ?
     ''', (study_set_id,))
     flashcards = cursor.fetchall()
     conn.close()
-    return [{'question': row[0], 'answer': row[1]} for row in flashcards]
+    
+    # Include `id` in each dictionary entry
+    return [{'id': row[0], 'question': row[1], 'answer': row[2]} for row in flashcards]
+
 
 # Delete a study set and all associated flashcards
 def delete_study_set(study_set_id):
