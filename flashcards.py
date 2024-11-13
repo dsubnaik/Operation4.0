@@ -125,3 +125,10 @@ def delete_flashcard_from_db(flashcard_id):
     conn.commit()
     conn.close()
 
+def delete_study_set(study_set_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM flashcards WHERE study_set_id = ?', (study_set_id,))
+    cursor.execute('DELETE FROM study_sets WHERE id = ?', (study_set_id,))
+    conn.commit()
+    conn.close()

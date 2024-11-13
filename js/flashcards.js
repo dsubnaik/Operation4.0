@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Fetch and generate study set buttons
+// Fetch and generate study set buttons
 async function loadStudySets() {
   try {
     const response = await fetch('/api/get_study_sets');
@@ -26,6 +27,9 @@ async function loadStudySets() {
       const studySets = await response.json();
       studySetButtonsContainer.innerHTML = ""; // Clear existing buttons
       studySets.forEach(set => {
+        const buttonContainer = document.createElement("div");
+        buttonContainer.classList.add("study-set-container");
+
         const button = document.createElement("button");
         button.textContent = set.name;
         button.classList.add("load-set-btn");
@@ -33,7 +37,15 @@ async function loadStudySets() {
           button.classList.add("active-set");
         }
         button.addEventListener("click", () => handleStudySetClick(button, set.id));
-        studySetButtonsContainer.appendChild(button);
+        buttonContainer.appendChild(button);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("delete-set-btn");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteStudySet(set.id));
+        buttonContainer.appendChild(deleteButton);
+
+        studySetButtonsContainer.appendChild(buttonContainer);
       });
     } else {
       console.error("Failed to fetch study sets.");
@@ -213,3 +225,24 @@ createStudySetButton.addEventListener("click", async () => {
     console.error("Error creating new study set:", error);
   }
 });
+// Delete a study set from the database
+async function deleteStudySet(studySetId) {
+  if (confirm("Are you sure you want to delete this study set? This action cannot be undone.")) {
+    try {
+      const response = await fetch('/api/delete_study_set', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ study_set_id: studySetId })
+      });
+      if (response.ok) {
+        loadStudySets(); // Reload study sets after deletion
+        cardListContainer.innerHTML = ""; // Clear flashcards if deleted set was selected
+        currentStudySet = null;
+      } else {
+        console.error("Failed to delete study set.");
+      }
+    } catch (error) {
+      console.error("Error deleting study set:", error);
+    }
+  }
+}

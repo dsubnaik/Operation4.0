@@ -322,3 +322,22 @@ textarea:focus {
     gap: 1.2em;
   }
 }
+.study-set-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delete-set-btn {
+  background-color: #ff5353;
+  color: white;
+  border: none;
+  padding: 0.5em;
+  border-radius: 0.3em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-set-btn:hover {
+  background-color: #ff3333;
+}
