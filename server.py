@@ -416,12 +416,8 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
 
     def serve_achievements_page(self, user_id):
-        # Fetch unlocked achievements for the user
         unlocked_achievements = get_user_achievements(user_id)
-        
-        # Debug print statement to check retrieved achievements
-        print("Retrieved achievements:", unlocked_achievements)
-        
+
         achievements_html = "".join(
             f"<div class='achievement-card'><h3>{name}</h3><p>{description}</p><div class='achievement-badge'>{badge}</div></div>"
             for name, description, badge in unlocked_achievements
@@ -434,7 +430,6 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         self.wfile.write(html_content.encode("utf-8"))
-
 
     def serve_progress_page(self, user_id):
         # Fetch user progress data
