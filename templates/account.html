@@ -11,7 +11,7 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e5e3e6; /* Matching the background color from the homepage */
+            background-color: #e5e3e6;
         }
 
         /* Header (white top panel) */
@@ -30,7 +30,7 @@
         }
 
         .app-name {
-            font-size: 22px; /* Matching homepage font size */
+            font-size: 22px;
             font-weight: bold;
             color: black;
         }
@@ -70,7 +70,7 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center; /* Centering the content */
+            text-align: center;
         }
 
         h1, h2 {
@@ -130,13 +130,6 @@
         .logout-btn:hover {
             background-color: #d32f2f;
         }
-
-        #profileImage {
-            display: block;
-            margin-top: 10px;
-            border-radius: 50%;
-        }
-
     </style>
 </head>
 <body>
@@ -160,39 +153,32 @@
         <h1>Account Page</h1>
         <p>Welcome to the My Account page.</p>
 
-        <!-- Profile Section -->
+        <!-- Edit Username Section -->
         <div class="profile-section">
-            <h2>Edit Profile Picture</h2>
-            <input type="file" id="profilePicture">
-            <img id="profileImage" src="default_profile.png" alt="Profile Picture" width="150px">
+            <h2>Edit Username</h2>
+            <label for="userName">Username:</label>
+            <input type="text" id="userName" value="<!--USERNAME_PLACEHOLDER-->">
+            <button type="button" onclick="updateUserInfo()">Save Username</button>
         </div>
 
         <!-- Personal Information -->
         <div class="profile-section">
             <h2>Personal Information</h2>
-            <label>Name:</label>
-            <input type="text" id="userName" value="John Doe">
-            <label>Email:</label>
+            <label for="displayName">Name:</label>
+            <input type="text" id="displayName" value="John Doe">
+            <label for="userEmail">Email:</label>
             <input type="email" id="userEmail" value="johndoe@example.com" disabled>
         </div>
 
         <!-- Password Management -->
         <div class="profile-section">
             <h2>Change Password</h2>
-            <label>New Password:</label>
+            <label for="newPassword">New Password:</label>
             <input type="password" id="newPassword">
-            <button type="button" onclick="updatePassword()">Update Password</button>
+            <button type="button" onclick="updateUserInfo()">Update Password</button>
         </div>
 
-        <!-- Notification Settings -->
-        <div class="profile-section">
-            <h2>Notification Settings</h2>
-            <label>
-                <input type="checkbox" id="emailNotifications" checked>
-                Email Notifications
-            </label>
-        </div>
-
+        
         <!-- Logout Button -->
         <div class="profile-section">
             <button class="logout-btn" onclick="logout()">Logout</button>
@@ -200,13 +186,45 @@
     </div>
 
     <script>
-        function updatePassword() {
-            alert("Password Updated!");
+        function updateUserInfo() {
+            const username = document.getElementById("userName").value;
+            const displayName = document.getElementById("displayName").value;
+            const newPassword = document.getElementById("newPassword").value;
+
+            fetch('/api/update_user_info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    name: displayName,
+                    new_password: newPassword ? newPassword : null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // Success message
+                } else if (data.error) {
+                    alert("Error: " + data.error); // Error message
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         function logout() {
-            alert("Logging out...");
-            window.location.href = 'login_screen.html'; 
+            fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect the user to the login page after successful logout
+                    window.location.href = '/login_screen.html';
+                } else {
+                    alert("Error logging out. Please try again.");
+                }
+            })
+            .catch(error => console.error('Logout error:', error));
         }
     </script>
 

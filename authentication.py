@@ -72,3 +72,33 @@ def fetch_user_details(username):
             "email": user[2]
         }
     return None
+
+
+def update_user_info(user_id, username, name, new_password):
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    try:
+        if username:
+            print(f"Updating username to {username} for user ID {user_id}")
+            cursor.execute('UPDATE users SET username = ? WHERE id = ?', (username, user_id))
+        
+        if name:
+            print(f"Updating name to {name} for user ID {user_id}")
+            first_name, last_name = name.split(' ', 1) if ' ' in name else (name, '')
+            cursor.execute('UPDATE users SET first_name = ?, last_name = ? WHERE id = ?', (first_name, last_name, user_id))
+        
+        if new_password:
+            print(f"Updating password for user ID {user_id}")
+            cursor.execute('UPDATE users SET password = ? WHERE id = ?', (new_password, user_id))
+        
+        # Removed email_notifications update
+
+        conn.commit()
+        print("User information updated successfully in the database.")
+        return True
+    except sqlite3.Error as e:
+        print("Database error:", e)
+        conn.rollback()
+        return False
+    finally:
+        conn.close()

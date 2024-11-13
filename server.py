@@ -5,12 +5,12 @@ import os
 import mimetypes
 import json
 import random
-from authentication import handle_login, handle_signup, fetch_user_details
+from authentication import handle_login, handle_signup, fetch_user_details, update_user_info
 from achievements import initialize_achievements, get_user_achievements, unlock_achievement
 from progress_tracker import initialize_progress_tables, get_user_progress
 from effort_tracker import initialize_effort_levels_table, get_user_effort_levels
 from userDatabase import initialize_database
-from flashcards import initialize_flashcards_table, get_study_sets, get_flashcards, add_study_set, add_flashcard, delete_flashcard_from_db
+from flashcards import initialize_flashcards_table, get_study_sets, get_flashcards, add_study_set, add_flashcard, delete_flashcard_from_db, delete_study_set
 from resource_handler import initialize_resources_table, get_resources, generate_resources_html
 
 
@@ -319,21 +319,101 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 redirect(self, '/signup.html?error=user_exists')
 
+        elif self.path == '/api/delete_study_set':
+            data = parse_json_post_data(self)
+            study_set_id = data.get('study_set_id')
+            if study_set_id:
+                delete_study_set(int(study_set_id))  # Call the function to delete the study set
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"message": "Study set deleted successfully"}')
+            else:
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Study set ID required"}')
+
+        # In the POST request handling part
+        elif self.path == '/api/update_user_info':
+            user_ip = self.client_address[0]
+            user_data = sessions.get(user_ip)
+            if not user_data:
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Unauthorized"}')
+                return
+            
+            # Parse the incoming data
+            data = parse_json_post_data(self)
+            username = data.get('username')
+            name = data.get('name')
+            new_password = data.get('new_password')
+            
+            
+            # Log the received data for debugging
+            print("Received data for updating user info:", data)
+            
+            # Update user information in the database
+            success = update_user_info(
+                user_data["id"], username, name, new_password
+            )
+
+            if success:
+                if username:
+                    sessions[user_ip]["username"] = username
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"message": "User information updated successfully"}')
+            else:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Failed to update user information"}')
+        
+        elif self.path == '/logout':
+            user_ip = self.client_address[0]
+            if user_ip in sessions:
+                # Delete the user's session
+                del sessions[user_ip]
+                # Send a success response
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"message": "Logged out successfully"}')
+            else:
+                # Send an error response if there's no session
+                self.send_response(403)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"error": "User not logged in"}')
+        
+        # Continue with other POST handling
+        # ...
+
 
 
         
 
     def serve_account_page(self, user_data):
+        # Fetch user details based on the provided username
         user_info = fetch_user_details(user_data["username"])
+        
+        # Open the account.html template file
         with open(os.path.join(TEMPLATES_DIR, "account.html"), 'r', encoding='utf-8') as file:
             html_content = file.read()
-            html_content = html_content.replace("John Doe", f"{user_info['first_name']} {user_info['last_name']}")
-            html_content = html_content.replace("johndoe@example.com", user_info['email'])
+            
+            # Replace placeholders with actual user data
+            html_content = html_content.replace("<!--USERNAME_PLACEHOLDER-->", user_data["username"])  # Replace with username
+            html_content = html_content.replace("John Doe", f"{user_info['first_name']} {user_info['last_name']}")  # Replace with full name
+            html_content = html_content.replace("johndoe@example.com", user_info['email'])  # Replace with email
 
+        # Send the modified HTML content to the client
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write(html_content.encode('utf-8'))
+
+
 
     def serve_achievements_page(self, user_id):
         # Fetch unlocked achievements for the user
@@ -436,6 +516,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         self.wfile.write(html_content.encode("utf-8"))
+
 
 
 # Helper functions
