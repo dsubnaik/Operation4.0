@@ -1,4 +1,5 @@
 import sqlite3
+from achievements import check_and_unlock_achievement
 
 # Connect to the database
 def get_connection():
@@ -161,3 +162,43 @@ def get_user_progress(user_id):
 
     conn.close()
     return progress_data
+
+def check_and_unlock_achievement(user_id, action_type, action_count):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    achievement_criteria = {
+        "quiz_completed": [
+            (5, "Quiz Novice"),
+            (20, "Quiz Intermediate"),
+            (50, "Quiz Expert")
+        ],
+        "flashcard_created": [
+            (10, "Flashcard Creator"),
+            (50, "Flashcard Collector"),
+            (100, "Flashcard Master")
+        ],
+        # Add other criteria here
+    }
+
+    criteria = achievement_criteria.get(action_type, [])
+    for count, achievement_name in criteria:
+        if action_count >= count:
+            cursor.execute("SELECT id FROM achievements WHERE name = ?", (achievement_name,))
+            achievement_id = cursor.fetchone()
+            if achievement_id:
+                unlock_achievement(user_id, achievement_id[0])  # Unlock the achievement
+
+    conn.close()
+
+def unlock_achievement(user_id, achievement_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    INSERT OR IGNORE INTO user_achievements (user_id, achievement_id)
+    VALUES (?, ?)
+    ''', (user_id, achievement_id))
+
+    conn.commit()
+    conn.close()
