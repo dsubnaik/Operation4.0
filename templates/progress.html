@@ -142,8 +142,8 @@
         <div class="progress-section">
             <h3>Study Time Progress</h3>
             <div class="progress-bar-container">
-                <div class="progress-bar" style="width: 55%;">
-                    <div class="progress-value">5h 30m</div> 
+                <div class="progress-bar" style="width: {{STUDY_TIME_PERCENTAGE}}%;">
+                    <div class="progress-value">{{STUDY_TIME_DISPLAY}}</div> 
                 </div>
             </div>
         </div>
@@ -152,21 +152,18 @@
         <div class="progress-section">
             <h3>Quiz Performance</h3>
             <div class="progress-bar-container">
-                <div class="progress-bar" style="width: 80%; background-color: #ff9800;">
-                    <div class="progress-value">80% quizzes passed</div>
+                <div class="progress-bar" style="width: {{QUIZ_PERFORMANCE_PERCENTAGE}}%; background-color: #ff9800;">
+                    <div class="progress-value">{{QUIZ_PERFORMANCE_DISPLAY}}</div>
                 </div>
             </div>
         </div>
 
-        <!-- Chart Section (for Visual Representation) -->
+        <!-- Chart Section -->
         <div class="chart-container">
-            <!-- Study Time Chart -->
             <div class="chart">
                 <h3>Study Time Overview</h3>
                 <canvas id="studyTimeChart"></canvas>
             </div>
-
-            <!-- Areas of Improvement Chart -->
             <div class="chart">
                 <h3>Areas of Improvement</h3>
                 <canvas id="improvementChart"></canvas>
@@ -176,33 +173,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Injected progress data as JSON
+        const progressData = {{USER_PROGRESS_DATA}};
+
+        // Render Study Time Chart
         const ctx1 = document.getElementById('studyTimeChart').getContext('2d');
         const studyTimeChart = new Chart(ctx1, {
             type: 'line', 
             data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                labels: progressData.study_hours_weeks, // Array of weeks
                 datasets: [{
                     label: 'Study Hours',
-                    data: [5, 10, 8, 12],
+                    data: progressData.study_hours, // Array of study hours
                     borderColor: '#4caf50',
                     fill: false
                 }]
             }
         });
 
+        // Render Areas of Improvement Chart
         const ctx2 = document.getElementById('improvementChart').getContext('2d');
         const improvementChart = new Chart(ctx2, {
             type: 'bar', 
             data: {
-                labels: ['Math', 'Science', 'History', 'English'],
+                labels: progressData.subjects, // Array of subjects
                 datasets: [{
                     label: 'Performance Level',
-                    data: [75, 90, 60, 85],
+                    data: progressData.performance_levels, // Array of performance levels
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50']
                 }]
             }
         });
     </script>
-
 </body>
 </html>

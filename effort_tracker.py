@@ -1,80 +1,97 @@
 import sqlite3
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# Connect to the database
+# Set the path to your database
+DB_PATH = 'C:/Users/derri/OneDrive/Documents/GitHub/Operation4.0/users.db'
+
+
 def get_connection():
-    return sqlite3.connect('users.db')
+    """Establish a connection to the SQLite database."""
+    print(f"Connecting to database at: {DB_PATH}")
+    return sqlite3.connect(DB_PATH)
 
-# Initialize the effort_levels table
+
 def initialize_effort_levels_table():
+    """Drop and recreate the effort_levels table."""
     conn = get_connection()
     cursor = conn.cursor()
-    
-    # Create the effort_levels table if it doesn't exist, with a unique constraint on user_id and week_start_date
+
+    # Drop the table if it exists and recreate it
+    cursor.execute("DROP TABLE IF EXISTS effort_levels")
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS effort_levels (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        week_start_date DATE,
-        study_frequency INTEGER,
-        study_duration_minutes INTEGER,
-        focus_areas TEXT,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        UNIQUE(user_id, week_start_date)  -- Ensures one entry per user per week
-    )
+        CREATE TABLE IF NOT EXISTS effort_levels (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            week_start_date DATE,
+            study_frequency INTEGER,
+            study_duration_minutes INTEGER,
+            focus_areas TEXT,
+            UNIQUE(user_id, week_start_date)
+        );
     ''')
-    
     conn.commit()
     conn.close()
+    print("effort_levels table initialized.")
 
-# Insert or update effort data for a specific week
-def update_effort_levels(user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas):
+
+def insert_sample_data():
+    """Insert sample data into the effort_levels table."""
     conn = get_connection()
     cursor = conn.cursor()
-    
-    # Convert focus areas dictionary to JSON format for storage
-    focus_areas_json = json.dumps(focus_areas)
-    
-    # Attempt to insert; if conflict, update the row instead
+
+    # Define sample data for user_id 1
+    user_id = 1
+    week_start_date = datetime.now().strftime('%Y-%m-%d')
+    study_frequency = 5
+    study_duration_minutes = 600
+    focus_areas = json.dumps({"Math": 40, "Science": 30, "History": 30})
+
     cursor.execute('''
-    INSERT INTO effort_levels (user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas)
-    VALUES (?, ?, ?, ?, ?)
-    ON CONFLICT(user_id, week_start_date) 
-    DO UPDATE SET 
-        study_frequency=excluded.study_frequency, 
-        study_duration_minutes=excluded.study_duration_minutes, 
-        focus_areas=excluded.focus_areas
-    ''', (user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas_json))
-    
+        INSERT INTO effort_levels (user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas))
+
     conn.commit()
     conn.close()
+    print("Inserted sample data into 'effort_levels' table.")
 
-# Fetch the latest effort data for a user
+
 def get_user_effort_levels(user_id):
+    """Retrieve the latest effort data for a given user_id."""
     conn = get_connection()
     cursor = conn.cursor()
-    
-    # Get the most recent effort data
+
+    # Retrieve the latest week's data for the user
     cursor.execute('''
-    SELECT study_frequency, study_duration_minutes, focus_areas
-    FROM effort_levels
-    WHERE user_id = ?
-    ORDER BY week_start_date DESC
-    LIMIT 1
+        SELECT study_frequency, study_duration_minutes, focus_areas
+        FROM effort_levels
+        WHERE user_id = ?
+        ORDER BY week_start_date DESC
+        LIMIT 1
     ''', (user_id,))
-    
-    effort_data = cursor.fetchone()
+
+    result = cursor.fetchone()
     conn.close()
-    
-    # Return the effort data as a dictionary
-    if effort_data:
-        # Convert JSON string back to dictionary for focus areas
-        focus_areas = json.loads(effort_data[2])
-        return {
-            "study_frequency": effort_data[0],
-            "study_duration": effort_data[1],
-            "focus_areas": focus_areas
-        }
-    else:
+
+    if result is None:
+        print(f"No data found for user_id {user_id}")
         return None
+
+    study_frequency, study_duration_minutes, focus_areas_json = result
+    focus_areas = json.loads(focus_areas_json) if focus_areas_json else {}
+    return {
+        "study_frequency": study_frequency,
+        "study_duration": study_duration_minutes,
+        "focus_areas": focus_areas
+    }
+
+
+# Initialize and populate the table if running this script directly
+if __name__ == "__main__":
+    #initialize_effort_levels_table()
+    insert_sample_data()
+
+    # Verify that data is accessible
+    data = get_user_effort_levels(1)
+    print(f"Effort data for user_id 1: {data}")

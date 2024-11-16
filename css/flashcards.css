@@ -1,15 +1,18 @@
-/* Stylesheet */
+/* Reset and Base Styles */
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
+
 body {
   background-color: #f7f9fd;
 }
+
+/* Header Styles */
 .header {
-  background-color: white;
+  background-color: #72a37f;
   padding: 10px 20px;
   position: fixed;
   width: 100%;
@@ -20,16 +23,14 @@ body {
   justify-content: space-between;
   align-items: center;
 }
-.app-name {
-  font-size: 1.5em;
-  color: #363d55;
-  font-weight: 600;
-}
+
+.app-name,
 .page-title {
   font-size: 1.5em;
   color: #363d55;
   font-weight: 600;
 }
+
 #exit-btn {
   background-color: #ff5353;
   color: white;
@@ -37,43 +38,104 @@ body {
   padding: 0.5em 1em;
   border-radius: 0.3em;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
+
 #exit-btn:hover {
   background-color: #ff3333;
 }
+
+/* Main Container Styles */
 .container {
   width: 90vw;
   max-width: 62.5em;
   position: relative;
-  margin: 100px auto 0; /* Adjusted for the header height */
+  margin: 100px auto 0; /* Offset for fixed header */
 }
+
+/* Button Styles */
+.button {
+  background-color: #f4f4f8;
+  color: #363d55;
+  font-size: 1em;
+  padding: 0.8em 1.5em;
+  border-radius: 0.3em;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover {
+  background-color: #dddddd;
+  transform: translateY(-2px);
+}
+
+.button:focus {
+  outline: none;
+}
+
+/* Study Set Options */
+.study-set-options {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+#study-set-buttons-container .load-set-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin: 0.2em;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.load-set-btn:hover {
+  background-color: #45a049;
+}
+
+/* Active Study Set Button Style */
+.active-set {
+  background-color: #2e7d32; /* Darker green */
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+/* Add Flashcard Button */
 .add-flashcard-con {
   display: flex;
   justify-content: flex-end;
   padding: 1.2em 1em;
 }
-button {
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
+
 .add-flashcard-con button {
   font-size: 1em;
-  background-color: black;
+  background-color: #000000;
   color: #ffffff;
   padding: 0.8em 1.2em;
   font-weight: 500;
   border-radius: 0.4em;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
-#card-con {
-  margin-top: 1em;
+
+.add-flashcard-con button:hover {
+  background-color: #333333;
 }
+
+/* Question and Answer Form (Popup) */
 .question-container {
   width: 90vw;
   max-width: 34em;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   background-color: #ffffff;
   position: absolute;
   transform: translate(-50%, -50%);
@@ -83,6 +145,7 @@ button {
   border-radius: 0.6em;
   box-shadow: 0 1em 2em rgba(28, 0, 80, 0.1);
 }
+
 .question-container h2 {
   font-size: 2.2em;
   color: #363d55;
@@ -90,36 +153,42 @@ button {
   text-align: center;
   margin-bottom: 2em;
 }
+
 .wrapper {
   display: grid;
   grid-template-columns: 11fr 1fr;
   gap: 1em;
   margin-bottom: 1em;
 }
+
 .error-con {
   align-self: center;
 }
+
 #error {
   color: #ff5353;
   font-weight: 400;
 }
+
 .fa-xmark {
   font-size: 1.4em;
-  background-color: black;
+  background-color: #000000;
+  color: #ffffff;
   height: 1.8em;
   width: 1.8em;
   display: grid;
   place-items: center;
-  color: #ffffff;
   border-radius: 50%;
   cursor: pointer;
-  justify-self: flex-end;
 }
+
+/* Labels and Text Areas */
 label {
   color: #363d55;
   font-weight: 600;
   margin-bottom: 0.3em;
 }
+
 textarea {
   width: 100%;
   padding: 0.7em 0.5em;
@@ -129,80 +198,121 @@ textarea {
   border-radius: 0.3em;
   resize: none;
 }
+
 textarea:not(:last-child) {
   margin-bottom: 1.2em;
 }
+
 textarea:focus {
   border-color: #363d55;
 }
+
 #save-btn {
   font-size: 1em;
-  background-color: black;
+  background-color: #000000;
   color: #ffffff;
   padding: 0.6em 0;
   border-radius: 0.3em;
   font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
+
+#save-btn:hover {
+  background-color: #333333;
+}
+
+/* Flashcard Display Area */
+#card-con {
+  margin-top: 1em;
+}
+
 .card-list-container {
   display: grid;
-  padding: 0.2em;
   gap: 1.5em;
-  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0.2em;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
+
 .card {
   background-color: #ffffff;
   box-shadow: 0 0.4em 1.2em rgba(28, 0, 80, 0.08);
   padding: 1.2em;
   border-radius: 0.4em;
+  transition: box-shadow 0.3s;
 }
-.question-div,
-.answer-div {
-  text-align: justify;
+
+.card:hover {
+  box-shadow: 0 0.6em 1.6em rgba(28, 0, 80, 0.15);
 }
+
+/* Flashcard Content */
 .question-div {
-  margin-bottom: 0.5em;
   font-weight: 500;
   color: #363d55;
+  margin-bottom: 0.5em;
+  text-align: justify;
 }
+
 .answer-div {
-  margin-top: 1em;
   font-weight: 400;
   color: #414a67;
+  margin-top: 1em;
+  text-align: justify;
 }
+
+/* Show/Hide Button */
 .show-hide-btn {
   display: block;
-  background-color: black;
+  background-color: #000000;
   color: #ffffff;
   text-decoration: none;
   text-align: center;
   padding: 0.6em 0;
   border-radius: 0.3em;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
+
+.show-hide-btn:hover {
+  background-color: #333333;
+}
+
+/* Flashcard Edit/Delete Buttons */
 .buttons-con {
   display: flex;
   justify-content: flex-end;
+  gap: 5px;
 }
+
 .edit,
 .delete {
   background-color: transparent;
   padding: 0.5em;
   font-size: 1.2em;
+  cursor: pointer;
 }
+
 .edit {
   color: #587ef4;
 }
+
 .delete {
   color: #ff5353;
 }
+
 .hide {
   display: none;
 }
+
+/* Responsive Design */
 @media screen and (max-width: 800px) {
   .card-list-container {
     grid-template-columns: 1fr 1fr;
     gap: 0.8em;
   }
 }
+
 @media screen and (max-width: 450px) {
   body {
     font-size: 14px;
@@ -212,8 +322,22 @@ textarea:focus {
     gap: 1.2em;
   }
 }
-.study-set-options {
+.study-set-container {
   display: flex;
+  align-items: center;
   gap: 10px;
-  margin-bottom: 15px;
+}
+
+.delete-set-btn {
+  background-color: #ff5353;
+  color: white;
+  border: none;
+  padding: 0.5em;
+  border-radius: 0.3em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-set-btn:hover {
+  background-color: #ff3333;
 }

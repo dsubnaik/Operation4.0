@@ -1,12 +1,11 @@
 import sqlite3
 from datetime import datetime
-import json
 
 # Connect to the database
 def get_connection():
     return sqlite3.connect('users.db')
 
-# Initialize the flashcards table
+# Initialize the flashcards and study_sets tables
 def initialize_flashcards_table():
     conn = get_connection()
     cursor = conn.cursor()
@@ -77,8 +76,59 @@ def get_flashcards(study_set_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
-    SELECT question, answer FROM flashcards WHERE study_set_id = ?
+    SELECT id, question, answer FROM flashcards WHERE study_set_id = ?
     ''', (study_set_id,))
     flashcards = cursor.fetchall()
     conn.close()
-    return [{'question': row[0], 'answer': row[1]} for row in flashcards]
+    
+    # Include `id` in each dictionary entry
+    return [{'id': row[0], 'question': row[1], 'answer': row[2]} for row in flashcards]
+
+
+# Delete a study set and all associated flashcards
+def delete_study_set(study_set_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM flashcards WHERE study_set_id = ?', (study_set_id,))
+    cursor.execute('DELETE FROM study_sets WHERE id = ?', (study_set_id,))
+    conn.commit()
+    conn.close()
+
+# Delete a specific flashcard from a study set
+def delete_flashcard(study_set_id, question):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    DELETE FROM flashcards WHERE study_set_id = ? AND question = ?
+    ''', (study_set_id, question))
+    conn.commit()
+    conn.close()
+
+# Update a flashcard within a specific study set
+def update_flashcard(study_set_id, old_question, new_question, new_answer):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    UPDATE flashcards
+    SET question = ?, answer = ?
+    WHERE study_set_id = ? AND question = ?
+    ''', (new_question, new_answer, study_set_id, old_question))
+    conn.commit()
+    conn.close()
+
+# Backend: Delete a specific flashcard by ID
+def delete_flashcard_from_db(flashcard_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    print("Deleting flashcard with ID:", flashcard_id)  # Log ID in the database function as well
+    cursor.execute('DELETE FROM flashcards WHERE id = ?', (flashcard_id,))
+    conn.commit()
+    conn.close()
+
+def delete_study_set(study_set_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM flashcards WHERE study_set_id = ?', (study_set_id,))
+    cursor.execute('DELETE FROM study_sets WHERE id = ?', (study_set_id,))
+    conn.commit()
+    conn.close()

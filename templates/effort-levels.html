@@ -9,7 +9,7 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: #e5e3e6; /* Matching the background color */
+            background-color: #e5e3e6;
         }
 
         .header {
@@ -118,20 +118,6 @@
             margin-bottom: 10px;
         }
 
-        .insights-section {
-            background-color: #fafafa;
-            padding: 15px;
-            border-left: 5px solid #4caf50;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            text-align: left;
-        }
-
-        .insights-section h4 {
-            margin: 0 0 10px;
-            color: #333;
-        }
-
         .focus-area-section {
             background-color: white;
             padding: 20px;
@@ -159,7 +145,6 @@
         .focus-area-section li span {
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
@@ -188,8 +173,8 @@
             <h3>Study Frequency</h3>
             <p class="effort-description">How often you're studying in a week.</p>
             <div class="effort-level-bar-container">
-                <div class="effort-level-bar" style="width: 60%;"></div>
-                <div class="effort-level-value">3 days/week</div>
+                <div class="effort-level-bar study-frequency" style="width: 0;"></div>
+                <div class="effort-level-value study-frequency">Loading...</div>
             </div>
         </div>
 
@@ -198,29 +183,53 @@
             <h3>Study Duration</h3>
             <p class="effort-description">Total time spent studying this week.</p>
             <div class="effort-level-bar-container">
-                <div class="effort-level-bar" style="width: 75%;"></div>
-                <div class="effort-level-value">7h 30m</div>
+                <div class="effort-level-bar study-duration" style="width: 0;"></div>
+                <div class="effort-level-value study-duration">Loading...</div>
             </div>
-        </div>
-
-        <!-- Personalized Insights -->
-        <div class="insights-section">
-            <h4>Personalized Insight</h4>
-            <p>Great job! You've increased your study time by 15% compared to last week. Try to study at least 4 days next week to maintain your progress.</p>
         </div>
 
         <!-- Focus Areas: Subjects -->
         <div class="focus-area-section">
             <h3>Focus Areas</h3>
             <p>Here are the subjects you've been focusing on the most:</p>
-            <ul>
-                <li><span>Math</span> - 40% of study time</li>
-                <li><span>Science</span> - 30% of study time</li>
-                <li><span>History</span> - 20% of study time</li>
-                <li><span>English</span> - 10% of study time</li>
+            <ul id="focus-areas-list">
+                <li>Loading...</li>
             </ul>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/api/effort_levels")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.querySelector(".effort-section").innerHTML = "<p>No effort data found</p>";
+                    } else {
+                        // Insert study frequency data
+                        document.querySelector(".effort-level-bar.study-frequency").style.width = `${(data.study_frequency / 7) * 100}%`;
+                        document.querySelector(".effort-level-value.study-frequency").textContent = `${data.study_frequency} days/week`;
+
+                        // Insert study duration data
+                        document.querySelector(".effort-level-bar.study-duration").style.width = `${(data.study_duration / (20 * 60)) * 100}%`;
+                        document.querySelector(".effort-level-value.study-duration").textContent = `${Math.floor(data.study_duration / 60)}h ${data.study_duration % 60}m`;
+
+                        // Insert focus areas data
+                        const focusAreasList = document.getElementById("focus-areas-list");
+                        focusAreasList.innerHTML = ""; // Clear any placeholders
+                        for (const [subject, percentage] of Object.entries(data.focus_areas)) {
+                            const li = document.createElement("li");
+                            li.innerHTML = `<span>${subject}</span> - ${percentage}% of study time`;
+                            focusAreasList.appendChild(li);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching effort levels:", error);
+                    document.querySelector(".effort-section").innerHTML = "<p>Error fetching effort levels.</p>";
+                });
+        });
+    </script>
 
 </body>
 </html>

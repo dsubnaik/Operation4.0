@@ -3,6 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flashcard App</title>
+
     <!-- Font Awesome Icons -->
     <link
         rel="stylesheet"
@@ -17,62 +18,76 @@
     <link rel="stylesheet" href="css/flashcards.css" />
 </head>
 <body>
-    <div class="header">
+    <!-- Header Section -->
+    <header class="header">
         <div class="app-name">Operation 4.0</div>
-        <div class="page-title">Flashcards</div>
-        <button id="exit-btn">Exit</button>
-    </div>
+        <h1 class="page-title">Flashcards</h1>
+        <button id="exit-btn" aria-label="Exit the flashcard app">Exit</button>
+    </header>
 
-    <div class="container">
+    <!-- Main Content Container -->
+    <main class="container">
         <!-- Study Set Options -->
-        <div class="study-set-options">
-            <button id="create-study-set">Create New Study Set</button>
-            <select id="study-set-dropdown"></select>
-        </div>
+        <section class="study-set-options">
+            <button id="create-study-set" class="button" aria-label="Create a new study set">Create New Study Set</button>
+            <div id="study-set-buttons-container" aria-live="polite" aria-relevant="additions">
+                <!-- Dynamic study set buttons will be inserted here -->
+            </div>
+        </section>
 
-        <div class="add-flashcard-con">
-            <button id="add-flashcard">Add Flashcard</button>
-        </div>
+        <!-- Add Flashcard Button -->
+        <section class="add-flashcard-con">
+            <button id="add-flashcard" class="button" aria-label="Add a new flashcard">Add Flashcard</button>
+        </section>
 
-        <!-- Display Card of Question And Answers Here -->
-        <div id="card-con">
+        <!-- Flashcards Display Container -->
+        <section id="card-con" aria-label="Flashcards container">
             <div class="card-list-container"></div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <!-- Input form for users to fill question and answer -->
-    <div class="question-container hide" id="add-question-card">
-        <h2>Add Flashcard</h2>
+    <!-- Flashcard Input Form -->
+    <div class="question-container hide" id="add-question-card" role="dialog" aria-labelledby="add-flashcard-heading" aria-hidden="true">
+        <h2 id="add-flashcard-heading">Add Flashcard</h2>
         <div class="wrapper">
             <!-- Error message -->
             <div class="error-con">
-                <span class="hide" id="error">Input fields cannot be empty!</span>
+                <span class="hide" id="error" aria-live="assertive">Input fields cannot be empty!</span>
             </div>
             <!-- Close Button -->
-            <i class="fa-solid fa-xmark" id="close-btn"></i>
+            <button id="close-btn" class="close-btn" aria-label="Close add flashcard form">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
 
+        <!-- Input Fields for Question and Answer -->
         <label for="question">Question:</label>
         <textarea
             class="input"
             id="question"
             placeholder="Type the question here..."
             rows="2"
+            aria-required="true"
         ></textarea>
+
         <label for="answer">Answer:</label>
         <textarea
             class="input"
             id="answer"
             rows="4"
             placeholder="Type the answer here..."
+            aria-required="true"
         ></textarea>
-        <button id="save-btn">Save</button>
+
+        <!-- Save Button -->
+        <button id="save-btn" class="button" aria-label="Save flashcard">Save</button>
     </div>
 
-    <!-- Script -->
+    <!-- JavaScript -->
     <script>
-        document.getElementById("exit-btn").addEventListener("click", function () {
-            window.location.href = "/home.html"; // Redirect to home page
+        // Exit button redirects to home page
+        document.getElementById("exit-btn").addEventListener("click", () => {
+            window.location.href = "/home.html";
         });
     </script>
     <script src="js/flashcards.js"></script>
