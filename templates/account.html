@@ -11,12 +11,12 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e5e3e6;
+            background-color: #e5e3e6; /* Matching the background color from the homepage */
         }
 
         /* Header (white top panel) */
         .header {
-            background-color: #72a37f;
+            background-color: white;
             padding: 10px 0;
             position: fixed;
             width: 100%;
@@ -26,11 +26,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 20px;
         }
 
         .app-name {
-            font-size: 22px;
+            font-size: 22px; /* Matching homepage font size */
             font-weight: bold;
             color: black;
         }
@@ -51,12 +51,12 @@
         }
 
         .header nav a:hover {
-            background-color: #4c6352;
+            background-color: #575757;
             color: white;
         }
 
         .header nav a.active {
-            background-color: #4c6352;
+            background-color: #636060;
             color: white;
         }
 
@@ -70,7 +70,7 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            text-align: center; /* Centering the content */
         }
 
         h1, h2 {
@@ -130,6 +130,13 @@
         .logout-btn:hover {
             background-color: #d32f2f;
         }
+
+        #profileImage {
+            display: block;
+            margin-top: 10px;
+            border-radius: 50%;
+        }
+
     </style>
 </head>
 <body>
@@ -153,32 +160,39 @@
         <h1>Account Page</h1>
         <p>Welcome to the My Account page.</p>
 
-        <!-- Edit Username Section -->
+        <!-- Profile Section -->
         <div class="profile-section">
-            <h2>Edit Username</h2>
-            <label for="userName">Username:</label>
-            <input type="text" id="userName" value="<!--USERNAME_PLACEHOLDER-->">
-            <button type="button" onclick="updateUserInfo()">Save Username</button>
+            <h2>Edit Profile Picture</h2>
+            <input type="file" id="profilePicture">
+            <img id="profileImage" src="default_profile.png" alt="Profile Picture" width="150px">
         </div>
 
         <!-- Personal Information -->
         <div class="profile-section">
             <h2>Personal Information</h2>
-            <label for="displayName">Name:</label>
-            <input type="text" id="displayName" value="John Doe">
-            <label for="userEmail">Email:</label>
+            <label>Name:</label>
+            <input type="text" id="userName" value="John Doe">
+            <label>Email:</label>
             <input type="email" id="userEmail" value="johndoe@example.com" disabled>
         </div>
 
         <!-- Password Management -->
         <div class="profile-section">
             <h2>Change Password</h2>
-            <label for="newPassword">New Password:</label>
+            <label>New Password:</label>
             <input type="password" id="newPassword">
-            <button type="button" onclick="updateUserInfo()">Update Password</button>
+            <button type="button" onclick="updatePassword()">Update Password</button>
         </div>
 
-        
+        <!-- Notification Settings -->
+        <div class="profile-section">
+            <h2>Notification Settings</h2>
+            <label>
+                <input type="checkbox" id="emailNotifications" checked>
+                Email Notifications
+            </label>
+        </div>
+
         <!-- Logout Button -->
         <div class="profile-section">
             <button class="logout-btn" onclick="logout()">Logout</button>
@@ -186,45 +200,13 @@
     </div>
 
     <script>
-        function updateUserInfo() {
-            const username = document.getElementById("userName").value;
-            const displayName = document.getElementById("displayName").value;
-            const newPassword = document.getElementById("newPassword").value;
-
-            fetch('/api/update_user_info', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: username,
-                    name: displayName,
-                    new_password: newPassword ? newPassword : null
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message); // Success message
-                } else if (data.error) {
-                    alert("Error: " + data.error); // Error message
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        function updatePassword() {
+            alert("Password Updated!");
         }
 
         function logout() {
-            fetch('/logout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Redirect the user to the login page after successful logout
-                    window.location.href = '/login_screen.html';
-                } else {
-                    alert("Error logging out. Please try again.");
-                }
-            })
-            .catch(error => console.error('Logout error:', error));
+            alert("Logging out...");
+            window.location.href = 'login_screen.html'; 
         }
     </script>
 
