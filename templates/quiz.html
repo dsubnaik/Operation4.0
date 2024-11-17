@@ -23,25 +23,33 @@
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 60px; /* Adjust height to ensure all content fits */
+            box-sizing: border-box; /* Include padding in the height */
         }
-
         .app-name, .page-title {
             font-size: 22px;
             font-weight: bold;
         }
 
-        .exit-button {
-            background-color: #f44336;
+        .exit-btn {
+            background-color: #ff5353;
             color: white;
-            padding: 10px 20px;
             border: none;
+            padding: 10px 20px; /* Ensure sufficient padding for visibility */
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px; /* Ensure the font is not too large */
             transition: background-color 0.3s;
         }
 
-        .exit-button:hover {
+        .exit-btn:hover {
             background-color: #d32f2f;
+        }
+
+        .exit-btn {
+            margin: 0; /* Remove unnecessary margin */
+            flex-shrink: 0; /* Prevent the button from shrinking */
+            box-sizing: border-box;
         }
 
         .main-content {
@@ -120,7 +128,6 @@
             font-size: 18px;
             text-align: center;
         }
-
     </style>
 </head>
 <body onload="fetchStudySets()">
@@ -129,7 +136,7 @@
     <div class="top-bar">
         <div class="app-name">Operation 4.0</div>
         <div class="page-title">Quiz</div>
-        <button class="exit-button" onclick="exitQuiz()">Exit</button>
+        <button class="exit-btn" onclick="exitQuiz()">Exit</button>
     </div>
 
     <!-- Main content area -->
@@ -221,8 +228,6 @@
             }
         }
 
-
-        // Submit quiz answers and display result
         // Submit quiz answers and display result
         async function submitQuiz(studySetId, questions) {
             const answers = questions.map((question, index) => {
@@ -248,7 +253,6 @@
                 console.error("Error submitting quiz:", error);
             }
         }
-
 
         // Exit Quiz button functionality
         function exitQuiz() {
