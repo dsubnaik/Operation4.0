@@ -1,3 +1,8 @@
+#Program Name: flashcards.py
+#Developer: Cassandra Villalobos
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: Includes all methods related to the flashcards
 import sqlite3
 from datetime import datetime
 

@@ -1,5 +1,8 @@
-# resource_handler.py
-
+#Program Name: resource_handler.py
+#Developer: Derrick Subnaik
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: Store the recommended sources  of Operation4.0
 import sqlite3
 import os
 

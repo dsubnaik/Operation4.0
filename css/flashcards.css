@@ -1,3 +1,8 @@
+/*Program Name: flashcards.css
+Developer: Derrick Subnaik
+Date Created: 11/17/2024
+Version: 1.0
+Purpose: The style sheet for the flashcarda page of the application*/
 /* Reset and Base Styles */
 * {
   padding: 0;
@@ -340,4 +345,25 @@ textarea:focus {
 
 .delete-set-btn:hover {
   background-color: #ff3333;
+}
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  z-index: 1000;
+  display: none;
+  animation: fadeInOut 4s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  10%, 90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(10px); }
 }

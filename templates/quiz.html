@@ -1,3 +1,8 @@
+<!--Program Name: quiz.html
+Developer: Yuva Praneeth Adapa
+Date Created: 11/17/2024
+Version: 1.0
+Purpose: The front end template for the  quiz page of the application-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +28,8 @@
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            height: 60px; /* Adjust height to ensure all content fits */
-            box-sizing: border-box; /* Include padding in the height */
+            height: 60px;
+            box-sizing: border-box;
         }
         .app-name, .page-title {
             font-size: 22px;
@@ -35,21 +40,15 @@
             background-color: #ff5353;
             color: white;
             border: none;
-            padding: 10px 20px; /* Ensure sufficient padding for visibility */
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px; /* Ensure the font is not too large */
+            font-size: 16px;
             transition: background-color 0.3s;
         }
 
         .exit-btn:hover {
             background-color: #d32f2f;
-        }
-
-        .exit-btn {
-            margin: 0; /* Remove unnecessary margin */
-            flex-shrink: 0; /* Prevent the button from shrinking */
-            box-sizing: border-box;
         }
 
         .main-content {
@@ -70,7 +69,6 @@
             margin-bottom: 20px;
         }
 
-        /* Apply consistent styling to all buttons */
         .study-set-button {
             padding: 10px 15px;
             background-color: #4CAF50;
@@ -86,7 +84,6 @@
             background-color: #45a049;
         }
 
-        /* Quiz Card for questions */
         .quiz-card {
             background-color: white;
             padding: 20px;
@@ -106,7 +103,6 @@
             margin-bottom: 8px;
         }
 
-        /* Submit Button */
         .submit-btn {
             background-color: #4CAF50;
             color: white;
@@ -122,11 +118,24 @@
             background-color: #45a049;
         }
 
-        /* Quiz Result Display */
         .quiz-result {
             margin-top: 20px;
             font-size: 18px;
             text-align: center;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -157,20 +166,22 @@
         <div class="quiz-result" id="quizResult"></div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+
     <script>
-        // Fetch study sets and create buttons for each
         async function fetchStudySets() {
             try {
                 const response = await fetch('/api/get_study_sets');
                 if (response.ok) {
                     const studySets = await response.json();
                     const container = document.getElementById("study-set-buttons-container");
-                    container.innerHTML = ""; // Clear previous buttons
+                    container.innerHTML = "";
 
                     studySets.forEach(set => {
                         const button = document.createElement("button");
                         button.textContent = set.name;
-                        button.className = "study-set-button"; // Apply consistent style class
+                        button.className = "study-set-button";
                         button.onclick = () => loadQuiz(set.id);
                         container.appendChild(button);
                     });
@@ -182,14 +193,13 @@
             }
         }
 
-        // Load quiz questions based on the selected study set
         async function loadQuiz(studySetId) {
             try {
                 const response = await fetch(`/api/get_quiz_questions?study_set_id=${studySetId}`);
                 if (response.ok) {
                     const questions = await response.json();
                     const quizContainer = document.getElementById("quiz-questions-container");
-                    quizContainer.innerHTML = ""; // Clear any prior questions
+                    quizContainer.innerHTML = "";
 
                     questions.forEach((question, index) => {
                         const quizCard = document.createElement("div");
@@ -213,7 +223,6 @@
                         quizContainer.appendChild(quizCard);
                     });
 
-                    // Add Submit button
                     const submitButton = document.createElement("button");
                     submitButton.className = "submit-btn";
                     submitButton.textContent = "Submit Quiz";
@@ -228,7 +237,6 @@
             }
         }
 
-        // Submit quiz answers and display result
         async function submitQuiz(studySetId, questions) {
             const answers = questions.map((question, index) => {
                 const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
@@ -239,12 +247,13 @@
                 const response = await fetch('/api/submit_quiz', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ study_set_id: studySetId, answers }) // Sending user answers
+                    body: JSON.stringify({ study_set_id: studySetId, answers })
                 });
 
                 if (response.ok) {
                     const result = await response.json();
                     document.getElementById("quizResult").textContent = `Your Score: ${result.score}/${questions.length}`;
+                    fetchAchievements();
                 } else {
                     console.error("Failed to submit quiz.");
                     document.getElementById("quizResult").textContent = "Failed to submit quiz.";
@@ -254,11 +263,34 @@
             }
         }
 
-        // Exit Quiz button functionality
+        async function fetchAchievements() {
+            try {
+                const response = await fetch('/api/get_user_achievements');
+                if (response.ok) {
+                    const achievements = await response.json();
+                    achievements.forEach(achievement => {
+                        showToast(`🎉 Achievement Unlocked: ${achievement.name}`);
+                    });
+                } else {
+                    console.error("Failed to fetch achievements.");
+                }
+            } catch (error) {
+                console.error("Error fetching achievements:", error);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 4000);
+        }
+
         function exitQuiz() {
             window.location.href = '/home.html';
         }
     </script>
-
 </body>
 </html>

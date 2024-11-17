@@ -1,5 +1,11 @@
+#Program Name: authentication.py
+#Developer: Daniel Carlos, Angela Franco
+#Date Created: 11/17/2024
+#Version: 1.0
+#Purpose: Serve the authentication of Operation4.0 such as LogIn and SignUp features.
 import sqlite3
 
+#This will handle the the log in for each user
 def handle_login(username, password):
     """
     Attempt to log in a user by verifying their username and password.
@@ -26,6 +32,7 @@ def handle_login(username, password):
         }
     return None
 
+#this will handle the sign up for each user
 def handle_signup(username, password, first_name, last_name, email):
     """
     Registers a new user in the system.
@@ -50,6 +57,7 @@ def handle_signup(username, password, first_name, last_name, email):
     conn.close()
     return True
 
+#method to get the user information from the databas
 def fetch_user_details(username):
     """
     Retrieves detailed information about a user based on their username.

@@ -1,3 +1,9 @@
+//Program Name: flashcards.js
+//Developer: Hunter Nichols, Derrick Subnaik
+//Date Created: 11/17/2024
+//Version: 1.0
+//Purpose: Allows for easy interactions between the flashcards page
+
 // DOM Elements
 const container = document.querySelector(".container");
 const addQuestionCard = document.getElementById("add-question-card");
@@ -12,13 +18,13 @@ const studySetButtonsContainer = document.getElementById("study-set-buttons-cont
 const cardListContainer = document.querySelector(".card-list-container");
 
 let currentStudySet = null; // Track the active study set
+const displayedAchievements = new Set(); // Keep track of displayed achievements
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
   loadStudySets();
 });
 
-// Fetch and generate study set buttons
 // Fetch and generate study set buttons
 async function loadStudySets() {
   try {
@@ -148,12 +154,20 @@ saveButton.addEventListener("click", async () => {
   errorMessage.classList.add("hide");
 
   try {
-    await fetch('/api/add_flashcard', {
+    const response = await fetch('/api/add_flashcard', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ study_set_id: currentStudySet, question, answer })
     });
-    loadFlashcards(currentStudySet);
+
+    if (response.ok) {
+      loadFlashcards(currentStudySet);
+
+      // Fetch achievements to check for any new unlocks
+      fetchAndShowAchievements();
+    } else {
+      console.error("Failed to save flashcard.");
+    }
   } catch (error) {
     console.error("Error saving flashcard:", error);
   }
@@ -177,9 +191,7 @@ closeButton.addEventListener("click", () => {
 });
 
 // Delete flashcard from the database
-// JavaScript: Delete flashcard from the database and remove from the DOM
 async function deleteFlashcard(flashcardId) {
-  console.log("Attempting to delete flashcard with ID:", flashcardId); // Check if this logs
   try {
     const response = await fetch('/api/delete_flashcard', {
       method: 'POST',
@@ -188,19 +200,17 @@ async function deleteFlashcard(flashcardId) {
     });
 
     if (response.ok) {
-      console.log("Flashcard deleted successfully from the backend."); // Confirm success from backend
       const flashcardElement = document.querySelector(`.card[data-id="${flashcardId}"]`);
       if (flashcardElement) {
         flashcardElement.remove();
       }
     } else {
-      console.error("Failed to delete flashcard from backend.");
+      console.error("Failed to delete flashcard.");
     }
   } catch (error) {
     console.error("Error deleting flashcard:", error);
   }
 }
-
 
 // Create new study set
 createStudySetButton.addEventListener("click", async () => {
@@ -213,11 +223,15 @@ createStudySetButton.addEventListener("click", async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ set_name: newSetName })
     });
+
     if (response.ok) {
       const newStudySet = await response.json();
       currentStudySet = newStudySet.id;
-      loadStudySets(); // Reload study set buttons
-      loadFlashcards(currentStudySet); // Load flashcards for the new set
+      loadStudySets();
+      loadFlashcards(currentStudySet);
+
+      // Fetch achievements to check for any new unlocks
+      fetchAndShowAchievements();
     } else {
       alert("A study set with that name already exists.");
     }
@@ -225,6 +239,7 @@ createStudySetButton.addEventListener("click", async () => {
     console.error("Error creating new study set:", error);
   }
 });
+
 // Delete a study set from the database
 async function deleteStudySet(studySetId) {
   if (confirm("Are you sure you want to delete this study set? This action cannot be undone.")) {
@@ -234,9 +249,10 @@ async function deleteStudySet(studySetId) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ study_set_id: studySetId })
       });
+
       if (response.ok) {
-        loadStudySets(); // Reload study sets after deletion
-        cardListContainer.innerHTML = ""; // Clear flashcards if deleted set was selected
+        loadStudySets();
+        cardListContainer.innerHTML = "";
         currentStudySet = null;
       } else {
         console.error("Failed to delete study set.");
@@ -244,5 +260,33 @@ async function deleteStudySet(studySetId) {
     } catch (error) {
       console.error("Error deleting study set:", error);
     }
+  }
+}
+
+// Show toast notifications
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 4000);
+}
+
+// Fetch and show achievements
+async function fetchAndShowAchievements() {
+  try {
+    const response = await fetch('/api/get_user_achievements');
+    if (response.ok) {
+      const achievements = await response.json();
+      achievements.forEach(achievement => {
+        if (!displayedAchievements.has(achievement.name)) {
+          showToast(`🎉 Achievement Unlocked: ${achievement.name}`);
+          displayedAchievements.add(achievement.name);
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching achievements:", error);
   }
 }

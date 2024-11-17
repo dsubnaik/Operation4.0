@@ -1,17 +1,22 @@
+#Program Name: effort_tracker.py
+#Developer: Hunter Nichols
+#Date Created: 11/17/2024
+#Version: 1.0
+#Purpose: Serve as te effort tracker of operation 4.0
 import sqlite3
 import json
 from datetime import datetime
 
 # Set the path to your database
-DB_PATH = 'C:/Users/derri/OneDrive/Documents/GitHub/Operation4.0/users.db'
+DB_PATH = "users.db"
 
-
+#estable a connection to the database
 def get_connection():
     """Establish a connection to the SQLite database."""
     print(f"Connecting to database at: {DB_PATH}")
     return sqlite3.connect(DB_PATH)
 
-
+#intitialize the effort levels database
 def initialize_effort_levels_table():
     """Drop and recreate the effort_levels table."""
     conn = get_connection()
@@ -34,29 +39,7 @@ def initialize_effort_levels_table():
     conn.close()
     print("effort_levels table initialized.")
 
-
-def insert_sample_data():
-    """Insert sample data into the effort_levels table."""
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    # Define sample data for user_id 1
-    user_id = 1
-    week_start_date = datetime.now().strftime('%Y-%m-%d')
-    study_frequency = 5
-    study_duration_minutes = 600
-    focus_areas = json.dumps({"Math": 40, "Science": 30, "History": 30})
-
-    cursor.execute('''
-        INSERT INTO effort_levels (user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (user_id, week_start_date, study_frequency, study_duration_minutes, focus_areas))
-
-    conn.commit()
-    conn.close()
-    print("Inserted sample data into 'effort_levels' table.")
-
-
+#get the user effort levels for the user that is logged in
 def get_user_effort_levels(user_id):
     """Retrieve the latest effort data for a given user_id."""
     conn = get_connection()
@@ -90,7 +73,7 @@ def get_user_effort_levels(user_id):
 # Initialize and populate the table if running this script directly
 if __name__ == "__main__":
     #initialize_effort_levels_table()
-    insert_sample_data()
+    
 
     # Verify that data is accessible
     data = get_user_effort_levels(1)
