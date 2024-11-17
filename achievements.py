@@ -1,3 +1,9 @@
+#Program Name: achievements.py
+#Developer: Derrick Subnaik
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: Serve the achievements of Operation4.0
+
 import sqlite3
 
 # Connect to the database
@@ -32,6 +38,7 @@ def initialize_achievements():
     )
     ''')
 
+    # Predefine achievements
     achievements = [
         # Quiz-related achievements
         ("Quiz Novice", "Completed 5 quizzes. Keep up the great work!", "Bronze Quizzer"),
@@ -44,7 +51,7 @@ def initialize_achievements():
         ("Flashcard Collector", "Created 50 flashcards. Building a great collection!", "Flashcard Enthusiast"),
         ("Flashcard Master", "Created 100 flashcards. You're a flashcard expert!", "Flashcard Mastery"),
         ("Flashcard Reviewer", "Reviewed flashcards 10 times. Keep revisiting to retain knowledge!", "Review Beginner"),
-        
+
         # Study time achievements
         ("Study Starter", "Spent 1 hour studying in total.", "Time Investor"),
         ("Study Pro", "Spent 10 hours studying in total.", "Dedicated Scholar"),
@@ -68,6 +75,7 @@ def initialize_achievements():
         ("Goal Achiever", "Achieved a set study goal.", "Goal Getter"),
     ]
 
+    # Insert achievements into the database, avoiding duplicates
     cursor.executemany('''
     INSERT OR IGNORE INTO achievements (name, description, badge)
     VALUES (?, ?, ?)
@@ -75,31 +83,120 @@ def initialize_achievements():
 
     conn.commit()
     conn.close()
-    print("Achievements tables initialized.")
+    print("Achievements tables initialized successfully.")
 
 # Fetch unlocked achievements for a specific user
 def get_user_achievements(user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute('''
     SELECT DISTINCT a.name, a.description, a.badge
     FROM achievements a
     JOIN user_achievements ua ON a.id = ua.achievement_id
     WHERE ua.user_id = ?
-    """, (user_id,))
+    ''', (user_id,))
 
     achievements = cursor.fetchall()
     conn.close()
-    return achievements
+    return [{'name': row[0], 'description': row[1], 'badge': row[2]} for row in achievements]
 
+# Check and unlock achievements based on user activity
+def check_and_unlock_achievement(user_id, action_type, action_count):
+    conn = get_connection()
+    cursor = conn.cursor()
 
-# Check and unlock an achievement for a user
+    # Define criteria for each type of achievement
+    achievement_criteria = {
+        # Quiz-related achievements
+        "quiz_completed": [
+            (5, "Quiz Novice"),
+            (20, "Quiz Intermediate"),
+            (50, "Quiz Expert"),
+        ],
+        "quiz_perfect_score": [
+            (1, "Perfect Score!"),
+        ],
+
+        # Flashcard-related achievements
+        "flashcard_created": [
+            (10, "Flashcard Creator"),
+            (50, "Flashcard Collector"),
+            (100, "Flashcard Master"),
+        ],
+        "flashcard_reviewed": [
+            (10, "Flashcard Reviewer"),
+        ],
+
+        # Study time achievements
+        "study_time_total": [
+            (60, "Study Starter"),  # 1 hour
+            (600, "Study Pro"),     # 10 hours
+            (3000, "Study Guru"),   # 50 hours
+        ],
+
+        # Streak achievements
+        "study_streak": [
+            (2, "One Day Streak"),
+            (7, "One Week Streak"),
+            (30, "One Month Streak"),
+        ],
+
+        # Interaction achievements
+        "interaction_shared_tips": [
+            (5, "Helpful User"),
+        ],
+        "interaction_joined_group": [
+            (1, "Collaborator"),
+        ],
+        "interaction_encouraged_others": [
+            (10, "Motivator"),
+        ],
+
+        # Special achievements
+        "quizzes_completed_percentage": [
+            (50, "Halfway There"),
+            (100, "Ultimate Quizzer"),
+        ],
+        "flashcards_reviewed_all": [
+            (1, "Flashcard Fanatic"),
+        ],
+        "study_goal_set": [
+            (1, "Goal Setter"),
+        ],
+        "study_goal_achieved": [
+            (1, "Goal Achiever"),
+        ],
+    }
+
+    # Retrieve criteria for the given action type
+    criteria = achievement_criteria.get(action_type, [])
+    unlocked_achievements = []  # Track newly unlocked achievements
+    for count, achievement_name in criteria:
+        if action_count >= count:
+            # Get the achievement ID
+            cursor.execute("SELECT id FROM achievements WHERE name = ?", (achievement_name,))
+            achievement_id = cursor.fetchone()
+            if achievement_id:
+                # Unlock the achievement for the user
+                cursor.execute('''
+                    INSERT OR IGNORE INTO user_achievements (user_id, achievement_id)
+                    VALUES (?, ?)
+                ''', (user_id, achievement_id[0]))
+                unlocked_achievements.append({
+                    "name": achievement_name,
+                    "criteria": f"{count} {action_type.replace('_', ' ')}"
+                })  # Add to unlocked list with criteria details
+
+    conn.commit()
+    conn.close()
+    return unlocked_achievements
+
+# Unlock a specific achievement for a user
 def unlock_achievement(user_id, achievement_id):
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Use INSERT OR IGNORE to avoid duplicates
     cursor.execute('''
     INSERT OR IGNORE INTO user_achievements (user_id, achievement_id)
     VALUES (?, ?)
@@ -108,12 +205,12 @@ def unlock_achievement(user_id, achievement_id):
     conn.commit()
     conn.close()
     print(f"Achievement {achievement_id} unlocked for user {user_id}.")
-    
+
 # Cleanup duplicates in user_achievements table
 def clean_up_duplicates():
     conn = get_connection()
     cursor = conn.cursor()
-    
+
     # Delete duplicate entries while keeping the earliest unlock date for each user/achievement pair
     cursor.execute('''
     DELETE FROM user_achievements
@@ -127,43 +224,3 @@ def clean_up_duplicates():
     conn.commit()
     conn.close()
     print("Duplicate entries removed from user_achievements table.")
-
-def check_and_unlock_achievement(user_id, action_type, action_count):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    achievement_criteria = {
-        "quiz_completed": [
-            (5, "Quiz Novice"),
-            (20, "Quiz Intermediate"),
-            (50, "Quiz Expert")
-        ],
-        "flashcard_created": [
-            (10, "Flashcard Creator"),
-            (50, "Flashcard Collector"),
-            (100, "Flashcard Master")
-        ],
-        # Add other criteria here
-    }
-
-    criteria = achievement_criteria.get(action_type, [])
-    for count, achievement_name in criteria:
-        if action_count >= count:
-            cursor.execute("SELECT id FROM achievements WHERE name = ?", (achievement_name,))
-            achievement_id = cursor.fetchone()
-            if achievement_id:
-                unlock_achievement(user_id, achievement_id[0])  # Unlock the achievement
-
-    conn.close()
-
-def unlock_achievement(user_id, achievement_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute('''
-    INSERT OR IGNORE INTO user_achievements (user_id, achievement_id)
-    VALUES (?, ?)
-    ''', (user_id, achievement_id))
-
-    conn.commit()
-    conn.close()

@@ -1,3 +1,9 @@
+#Program Name: userDatabase.py
+#Developer: Daniel Carlos
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: The creation of the userDatabase of Operation4.0
+
 import sqlite3
 
 # Function to get a connection to the database
