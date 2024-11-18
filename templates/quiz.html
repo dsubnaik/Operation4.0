@@ -1,3 +1,8 @@
+<!--Program Name: quiz.html
+Developer: Yuva Praneeth Adapa
+Date Created: 11/17/2024
+Version: 1.0
+Purpose: The front end template for the quiz page of the application-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,24 +28,26 @@
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 60px;
+            box-sizing: border-box;
         }
-
         .app-name, .page-title {
             font-size: 22px;
             font-weight: bold;
         }
 
-        .exit-button {
-            background-color: #f44336;
+        .exit-btn {
+            background-color: #ff5353;
             color: white;
-            padding: 10px 20px;
             border: none;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s;
         }
 
-        .exit-button:hover {
+        .exit-btn:hover {
             background-color: #d32f2f;
         }
 
@@ -62,7 +69,6 @@
             margin-bottom: 20px;
         }
 
-        /* Apply consistent styling to all buttons */
         .study-set-button {
             padding: 10px 15px;
             background-color: #4CAF50;
@@ -78,7 +84,6 @@
             background-color: #45a049;
         }
 
-        /* Quiz Card for questions */
         .quiz-card {
             background-color: white;
             padding: 20px;
@@ -98,7 +103,6 @@
             margin-bottom: 8px;
         }
 
-        /* Submit Button */
         .submit-btn {
             background-color: #4CAF50;
             color: white;
@@ -114,11 +118,46 @@
             background-color: #45a049;
         }
 
-        /* Quiz Result Display */
         .quiz-result {
             margin-top: 20px;
             font-size: 18px;
             text-align: center;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.5s, fadeOut 3s 4.5s forwards;
+            text-align: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
         }
 
     </style>
@@ -129,7 +168,7 @@
     <div class="top-bar">
         <div class="app-name">Operation 4.0</div>
         <div class="page-title">Quiz</div>
-        <button class="exit-button" onclick="exitQuiz()">Exit</button>
+        <button class="exit-btn" onclick="exitQuiz()">Exit</button>
     </div>
 
     <!-- Main content area -->
@@ -150,20 +189,60 @@
         <div class="quiz-result" id="quizResult"></div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+
     <script>
-        // Fetch study sets and create buttons for each
+        let pageStartTime = null;
+
+        // Start the timer when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            pageStartTime = Date.now(); // Record the time when the user opens the page
+        });
+
+        // Send time spent on the page to the server before the user exits
+        function trackPageTime() {
+            if (!pageStartTime) return; // Exit if `pageStartTime` is not set
+
+            const timeSpent = Math.floor((Date.now() - pageStartTime) / 1000); // Time in seconds
+            pageStartTime = null; // Reset to avoid duplicate calls
+
+            const payload = JSON.stringify({
+                page: window.location.pathname, // Identify the page
+                time_spent: timeSpent
+            });
+
+            try {
+                // Attempt to send via `sendBeacon` for reliability
+                const success = navigator.sendBeacon('/api/track_page_time', payload);
+                if (!success) throw new Error("sendBeacon failed"); // Fallback if `sendBeacon` is unsuccessful
+            } catch (error) {
+                // Fallback to `fetch` in case of `sendBeacon` failure
+                fetch('/api/track_page_time', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                }).catch(err => console.error("Failed to send time tracking data via fetch:", err));
+            }
+        }
+
+        // Track page time when the user leaves the page
+        window.addEventListener("beforeunload", trackPageTime);
+
+        const displayedAchievements = new Set();
+
         async function fetchStudySets() {
             try {
                 const response = await fetch('/api/get_study_sets');
                 if (response.ok) {
                     const studySets = await response.json();
                     const container = document.getElementById("study-set-buttons-container");
-                    container.innerHTML = ""; // Clear previous buttons
+                    container.innerHTML = "";
 
                     studySets.forEach(set => {
                         const button = document.createElement("button");
                         button.textContent = set.name;
-                        button.className = "study-set-button"; // Apply consistent style class
+                        button.className = "study-set-button";
                         button.onclick = () => loadQuiz(set.id);
                         container.appendChild(button);
                     });
@@ -175,14 +254,13 @@
             }
         }
 
-        // Load quiz questions based on the selected study set
         async function loadQuiz(studySetId) {
             try {
                 const response = await fetch(`/api/get_quiz_questions?study_set_id=${studySetId}`);
                 if (response.ok) {
                     const questions = await response.json();
                     const quizContainer = document.getElementById("quiz-questions-container");
-                    quizContainer.innerHTML = ""; // Clear any prior questions
+                    quizContainer.innerHTML = "";
 
                     questions.forEach((question, index) => {
                         const quizCard = document.createElement("div");
@@ -206,7 +284,6 @@
                         quizContainer.appendChild(quizCard);
                     });
 
-                    // Add Submit button
                     const submitButton = document.createElement("button");
                     submitButton.className = "submit-btn";
                     submitButton.textContent = "Submit Quiz";
@@ -221,9 +298,6 @@
             }
         }
 
-
-        // Submit quiz answers and display result
-        // Submit quiz answers and display result
         async function submitQuiz(studySetId, questions) {
             const answers = questions.map((question, index) => {
                 const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
@@ -234,12 +308,13 @@
                 const response = await fetch('/api/submit_quiz', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ study_set_id: studySetId, answers }) // Sending user answers
+                    body: JSON.stringify({ study_set_id: studySetId, answers })
                 });
 
                 if (response.ok) {
                     const result = await response.json();
                     document.getElementById("quizResult").textContent = `Your Score: ${result.score}/${questions.length}`;
+                    fetchAchievements();
                 } else {
                     console.error("Failed to submit quiz.");
                     document.getElementById("quizResult").textContent = "Failed to submit quiz.";
@@ -249,12 +324,46 @@
             }
         }
 
+        async function fetchAchievements() {
+            try {
+                const response = await fetch('/api/get_user_achievements');
+                if (response.ok) {
+                    const achievements = await response.json();
+                    let newAchievementsUnlocked = false;
 
-        // Exit Quiz button functionality
+                    achievements.forEach(achievement => {
+                        if (!displayedAchievements.has(achievement.name)) {
+                            showToast(`🎉 Achievement Unlocked: ${achievement.name}`);
+                            displayedAchievements.add(achievement.name);
+                            newAchievementsUnlocked = true;
+                        }
+                    });
+
+                    if (newAchievementsUnlocked) {
+                        showToast("🎉 You have unlocked a notification!");
+                    }
+                } else {
+                    console.error("Failed to fetch achievements.");
+                }
+            } catch (error) {
+                console.error("Error fetching achievements:", error);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.style.display = "block"; // Make the notification visible
+            
+            // Hide the toast automatically after the animation ends
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 5000); // Matches fadeOut animation timing (4.5s delay + fade duration)
+        }
+
         function exitQuiz() {
             window.location.href = '/home.html';
         }
     </script>
-
 </body>
 </html>

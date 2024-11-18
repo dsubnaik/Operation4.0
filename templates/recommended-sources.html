@@ -1,3 +1,8 @@
+<!--Program Name: recommended_sources.html
+Developer: Derrick Subnaik
+Date Created: 11/17/2024
+Version: 1.0
+Purpose: The front end template for the additional sources of the application-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +19,7 @@
 
         .header {
             background-color: #72a37f;
-            padding: 10px 0;
+            padding: 15px 20px;
             position: fixed;
             width: 100%;
             top: 0;
@@ -23,7 +28,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .app-name {
@@ -38,6 +44,14 @@
             flex-wrap: wrap;
         }
 
+        .header nav > div {
+            position: relative;
+        }
+
+        .header nav > div:hover .dropdown {
+            display: block;
+        }
+
         .header nav a {
             color: black;
             padding: 14px 20px;
@@ -47,13 +61,46 @@
         }
 
         .header nav a:hover {
-            background-color: #575757;
+            background-color: #4c6352;
             color: white;
         }
 
         .header nav a.active {
-            background-color: #636060;
+            background-color: #4c6352;
             color: white;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #4c6352;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            min-width: 150px;
+            z-index: 1000;
+            padding: 5px 0;
+        }
+
+        .dropdown li {
+            display: block;
+        }
+
+        .dropdown li a {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .dropdown li a:hover {
+            background-color: #72a37f;
+            color: black;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .main-content {
@@ -72,47 +119,120 @@
         .resource-card {
             background-color: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            border-radius: 8px; /* Reduced rounding for a simpler look */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            margin-bottom: 15px; /* Reduced spacing between cards */
             text-align: left;
+            border: 1px solid #ddd; /* Subtle border for structure */
         }
 
         .resource-card h3 {
             margin-top: 0;
-            color: #333;
-        }
-
-        .resource-card p {
-            color: #666;
-        }
-
-        .resource-card a {
-            color: #007bff;
-            text-decoration: none;
+            color: #333; /* Darker heading for simpler design */
+            font-size: 18px;
             font-weight: bold;
         }
 
+        .resource-card p {
+            color: #555; /* Subtle dark gray for descriptions */
+            font-size: 14px;
+            line-height: 1.6; /* Improved readability */
+        }
+
+        .resource-card a {
+            color: #007bff; /* Standard blue link color */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
         .resource-card a:hover {
-            text-decoration: underline;
+            text-decoration: underline; /* Underline on hover for clarity */
         }
 
         .resource-type {
-            background-color: #f5f5f5;
+            background-color: #f9f9f9; /* Neutral background */
             padding: 5px 10px;
             font-size: 12px;
-            border-radius: 5px;
+            border-radius: 4px;
             display: inline-block;
             margin-bottom: 10px;
+            color: #555; /* Subtle gray text */
         }
 
         .subject-badge {
-            background-color: #e0e0e0;
-            color: #333;
-            padding: 5px 10px;
-            border-radius: 20px;
+            background-color: #f0f0f0; /* Light neutral background */
+            color: #333; /* Darker text */
+            padding: 4px 8px;
+            border-radius: 16px; /* Smaller, pill-like shape */
             font-size: 12px;
             margin-right: 5px;
+        }
+
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .form-input:focus {
+            border-color: #72a37f;
+            box-shadow: 0 0 8px rgba(114, 163, 127, 0.5);
+            outline: none;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            display: block;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 600px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.03);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 768px) {
+            .form-input {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .submit-btn {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .resource-card {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -122,13 +242,30 @@
     <div class="header">
         <div class="app-name">Operation 4.0</div>
         <nav>
-            <a href="/home.html">Home</a>
-            <a href="/study.html">Study</a>
-            <a href="/account.html">My Account</a>
-            <a href="/achievements.html">Achievements</a>
-            <a href="/progress.html">Progress</a>
-            <a href="/effort-levels.html">Effort Levels</a>
-            <a href="/recommended-sources.html" class="active">Recommended Resources</a>
+            <div>
+                <a href="/home.html" id="home-link">Home</a>
+            </div>
+            <div>
+                <a href="#">Study Resources</a>
+                <ul class="dropdown">
+                    <li><a href="/study.html" id="study-link">Study</a></li>
+                    <li><a href="/recommended-sources.html" id="recommended-link">Recommended Sources</a></li>
+                </ul>
+            </div>
+            <div>
+                <a href="#">Account</a>
+                <ul class="dropdown">
+                    <li><a href="/account.html" id="account-link">My Account</a></li>
+                    <li><a href="/effort-levels.html" id="effort-link">Effort Levels</a></li>
+                </ul>
+            </div>
+            <div>
+                <a href="#">Achievements</a>
+                <ul class="dropdown">
+                    <li><a href="/achievements.html" id="achievements-link">Achievements</a></li>
+                    <li><a href="/progress.html" id="progress-link">Progress</a></li>
+                </ul>
+            </div>
         </nav>
     </div>
 
@@ -236,5 +373,38 @@
 
     </div>
 
+    <div class="main-content">
+        <div class="resource-card">
+            <h3>Submit a Resource</h3>
+            <p>Have a great learning resource to share? Submit it below, and we'll review it!</p>
+            <form id="resourceForm" onsubmit="handleSubmit(event)" style="display: flex; flex-direction: column; align-items: center;">
+                <div class="form-group" style="width: 100%; max-width: 600px;">
+                    <label for="resourceTitle" class="form-label">Title:</label>
+                    <input type="text" id="resourceTitle" name="resourceTitle" placeholder="Enter the resource title" class="form-input" required>
+                </div>
+                <div class="form-group" style="width: 100%; max-width: 600px;">
+                    <label for="resourceLink" class="form-label">Link:</label>
+                    <input type="url" id="resourceLink" name="resourceLink" placeholder="Enter the resource link" class="form-input" required>
+                </div>
+                <div class="form-group" style="width: 100%; max-width: 600px;">
+                    <label for="resourceDescription" class="form-label">Description:</label>
+                    <textarea id="resourceDescription" name="resourceDescription" rows="4" placeholder="Provide a brief description" class="form-input" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Resource</button>
+            </form>
+            <p id="submissionMessage" style="color: #28a745; margin-top: 15px; text-align: center; display: none; font-size: 16px; font-weight: bold;">
+                Your resource is up for review by the development team. Thank you!
+            </p>
+        </div>
+    </div>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const submissionMessage = document.getElementById('submissionMessage');
+            submissionMessage.style.display = 'block';
+            document.getElementById('resourceForm').reset();
+        }
+    </script>
+</script>
 </body>
 </html>

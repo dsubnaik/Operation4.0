@@ -1,3 +1,8 @@
+<!--Program Name: progress.html
+Developer: Cassandra Villalobos
+Date Created: 11/17/2024
+Version: 1.0
+Purpose: The front end for the progress page of the application-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +18,7 @@
         }
         .header {
             background-color: #72a37f;
-            padding: 10px 0;
+            padding: 15px 20px; /* Increased padding to provide more space */
             position: fixed;
             width: 100%;
             top: 0;
@@ -22,8 +27,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
+            box-sizing: border-box; /* Ensures padding doesn't overflow the header */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .app-name {
             font-size: 22px;
             color: black;
@@ -33,6 +40,12 @@
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+        }
+        .header nav > div {
+            position: relative;
+        }
+        .header nav > div:hover .dropdown {
+            display: block;
         }
         .header nav a {
             color: black;
@@ -49,6 +62,39 @@
             background-color: #4c6352;
             color: white;
         }
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #4c6352; /* Darker green for better contrast */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for depth */
+            border-radius: 8px; /* More rounded corners */
+            min-width: 150px;
+            z-index: 1000;
+            padding: 5px 0; /* Space between items */
+        }
+
+        .dropdown li {
+            display: block;
+        }
+
+        .dropdown li a {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white; /* Change text color to white for contrast */
+            text-decoration: none;
+            display: block; /* Ensures the link spans the full width */
+            border-radius: 4px; /* Rounded corners for individual items */
+        }
+
+        .dropdown li a:hover {
+            background-color: #72a37f; /* Highlighted item color */
+            color: black; /* Text color for hover */
+            font-weight: bold; /* Emphasize hovered text */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+        }
+
         .main-content {
             margin-top: 80px;
             padding: 20px;
@@ -123,13 +169,30 @@
     <div class="header">
         <div class="app-name">Operation 4.0</div>
         <nav>
-            <a href="/home.html">Home</a>
-            <a href="/study.html">Study</a>
-            <a href="/account.html">My Account</a>
-            <a href="/achievements.html">Achievements</a>
-            <a href="/progress.html" class="active">Progress</a>
-            <a href="/effort-levels.html">Effort Levels</a>
-            <a href="/recommended-sources.html">Recommended Sources</a>
+            <div>
+                <a href="/home.html" id="home-link">Home</a>
+            </div>
+            <div>
+                <a href="#">Study Resources</a>
+                <ul class="dropdown">
+                    <li><a href="/study.html" id="study-link">Study</a></li>
+                    <li><a href="/recommended-sources.html" id="recommended-link">Recommended Sources</a></li>
+                </ul>
+            </div>
+            <div>
+                <a href="#">Account</a>
+                <ul class="dropdown">
+                    <li><a href="/account.html" id="account-link">My Account</a></li>
+                    <li><a href="/effort-levels.html" id="effort-link">Effort Levels</a></li>
+                </ul>
+            </div>
+            <div>
+                <a href="#">Achievements</a>
+                <ul class="dropdown">
+                    <li><a href="/achievements.html" id="achievements-link">Achievements</a></li>
+                    <li><a href="/progress.html" id="progress-link">Progress</a></li>
+                </ul>
+            </div>
         </nav>
     </div>
 

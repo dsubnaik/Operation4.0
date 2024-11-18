@@ -1,3 +1,8 @@
+#Program Name: server.py
+#Developer: Derrick Subnaik, Cassandra Villalobos, Hunter Nichols, Daniel Carlos, Yuva Praneeth Adapa, Angela Franco
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: Serve the application of operation4.0 with the many pages
 import http.server
 import socketserver
 import urllib
@@ -6,12 +11,13 @@ import mimetypes
 import json
 import random
 from authentication import handle_login, handle_signup, fetch_user_details, update_user_info
-from achievements import initialize_achievements, get_user_achievements, unlock_achievement
+from achievements import initialize_achievements, get_user_achievements, check_and_unlock_achievement
 from progress_tracker import initialize_progress_tables, get_user_progress
 from effort_tracker import initialize_effort_levels_table, get_user_effort_levels
-from userDatabase import initialize_database
+from userDatabase import initialize_database,get_connection
 from flashcards import initialize_flashcards_table, get_study_sets, get_flashcards, add_study_set, add_flashcard, delete_flashcard_from_db, delete_study_set
 from resource_handler import initialize_resources_table, get_resources, generate_resources_html
+from time_tracking import initialize_time_tracking_table, handle_page_time_tracking
 
 
 PORT = 8000
@@ -50,8 +56,7 @@ def get_flashcards_for_study_set(handler, study_set_id):
     handler.end_headers()
     handler.wfile.write(json.dumps(flashcards).encode("utf-8"))
 
-import random
-
+#gets the questions from the study set in order to generate the quizzes
 def get_quiz_questions_for_study_set(handler, study_set_id):
     questions = get_flashcards(study_set_id)  # Fetch all flashcards for the study set
     quiz_questions = []
@@ -84,9 +89,11 @@ def parse_json_post_data(handler):
     post_data = handler.rfile.read(content_length)
     return json.loads(post_data.decode('utf-8'))
 
+#CustomHandler class
 class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
+        #Serve the different pages of the application
         if self.path == "/" or self.path == "/splashpage.html":
             serve_page(self, os.path.join(TEMPLATES_DIR, "splashpage.html"))
         elif self.path == "/home.html":
@@ -152,6 +159,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b'{"error": "Unauthorized"}')
 
+        #serve the flashcards
         elif self.path.startswith("/api/get_flashcards"):
             query = urllib.parse.urlparse(self.path).query
             params = urllib.parse.parse_qs(query)
@@ -175,7 +183,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b'{"error": "Study set ID required"}')
         
-        
+        #used to get effort levels and display them
         elif self.path == "/api/effort_levels":
             user_ip = self.client_address[0]
             user_data = sessions.get(user_ip)
@@ -200,12 +208,26 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b'{"error": "Unauthorized"}')
 
+        #this will get the user achievements
+        elif self.path == "/api/get_user_achievements":
+            user_ip = self.client_address[0]
+            user_data = sessions.get(user_ip)
+            if user_data:
+                user_id = user_data.get("id")
+                unlocked_achievements = get_user_achievements(user_id)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps(unlocked_achievements).encode("utf-8"))
+            else:
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write(b'{"error": "Unauthorized"}')
 
-                    
         else:
             super().do_GET()
 
-
+    #do_Post method
     def do_POST(self):
         if self.path == '/api/add_study_set':
             data = parse_json_post_data(self)
@@ -232,16 +254,37 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             study_set_id = data.get('study_set_id')
             question = data.get('question')
             answer = data.get('answer')
+            user_id = sessions.get(self.client_address[0], {}).get("id")
+
             if study_set_id and question and answer:
                 add_flashcard(study_set_id, question, answer)
-                self.send_response(201)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(b'{"message": "Flashcard added successfully"}')
+
+                if user_id:
+                    # Track flashcards created
+                    conn = get_connection()
+                    cursor = conn.cursor()
+                    cursor.execute('SELECT COUNT(*) FROM flashcards WHERE study_set_id IN (SELECT id FROM study_sets WHERE user_id = ?)', (user_id,))
+                    total_flashcards = cursor.fetchone()[0]
+                    conn.close()
+
+                    # Unlock achievements for flashcards
+                    unlocked = check_and_unlock_achievement(user_id, "flashcard_created", total_flashcards)
+
+                    # Return the list of newly unlocked achievements
+                    self.send_response(201)
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "message": "Flashcard added successfully",
+                        "unlocked_achievements": unlocked
+                    }).encode("utf-8"))
             else:
                 self.send_response(400)
                 self.end_headers()
                 self.wfile.write(b'{"error": "Missing study set ID, question, or answer"}')
+
+        elif self.path == '/api/track_page_time':
+            handle_page_time_tracking(self, sessions)  # Pass the sessions object
 
         elif self.path == '/api/delete_flashcard':
             data = parse_json_post_data(self)
@@ -283,11 +326,18 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 if correct_answers.get(question_id) == user_answer:
                     score += 1
 
+            # Check achievements
+            user_id = sessions.get(self.client_address[0], {}).get("id")
+            if user_id:
+                # Example: Check quiz-related achievements
+                check_and_unlock_achievement(user_id, "quiz_completed", len(answers))
+
             # Return the score
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"score": score}).encode("utf-8"))
+
 
         elif self.path == '/login_screen.html':
             post_data = parse_post_data(self)
@@ -315,7 +365,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             if handle_signup(username, password, first_name, last_name, email):
-                redirect(self, '/home.html')
+                redirect(self, '/login_screen.html')
             else:
                 redirect(self, '/signup.html?error=user_exists')
 
@@ -386,14 +436,8 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(b'{"error": "User not logged in"}')
-        
-        # Continue with other POST handling
-        # ...
 
-
-
-        
-
+    #serve the account page specific to the user
     def serve_account_page(self, user_data):
         # Fetch user details based on the provided username
         user_info = fetch_user_details(user_data["username"])
@@ -414,14 +458,17 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(html_content.encode('utf-8'))
 
 
-
+    #serve the achievements page of the application
     def serve_achievements_page(self, user_id):
         unlocked_achievements = get_user_achievements(user_id)
 
-        achievements_html = "".join(
-            f"<div class='achievement-card'><h3>{name}</h3><p>{description}</p><div class='achievement-badge'>{badge}</div></div>"
-            for name, description, badge in unlocked_achievements
-        )
+        if not unlocked_achievements:
+            achievements_html = "<p>No achievements unlocked yet. Start studying to unlock achievements!</p>"
+        else:
+            achievements_html = "".join(
+                f"<div class='achievement-card'><h3>{name}</h3><p>{description}</p><div class='achievement-badge'>{badge}</div></div>"
+                for name, description, badge in unlocked_achievements
+            )
 
         with open(os.path.join(TEMPLATES_DIR, "achievements.html"), "r", encoding="utf-8") as file:
             html_content = file.read().replace("<!-- ACHIEVEMENTS_PLACEHOLDER -->", achievements_html)
@@ -431,6 +478,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(html_content.encode("utf-8"))
 
+    #serve the progress page of the application
     def serve_progress_page(self, user_id):
         # Fetch user progress data
         progress_data = get_user_progress(user_id)
@@ -453,7 +501,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(html_content.encode("utf-8"))
 
-
+    #serve the effort levels of the application
     def serve_effort_levels_page(self, user_id):
         print(f"Attempting to retrieve effort data for user_id: {user_id}")
         
@@ -500,7 +548,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         print("Served effort levels page successfully.")
 
 
-
+    #serve the recommended sources of the application
     def serve_recommended_resources_page(self, user_id):
         resources_html = generate_resources_html()
 
@@ -532,6 +580,8 @@ initialize_progress_tables()
 #initialize_effort_levels_table()
 initialize_resources_table()
 initialize_flashcards_table()
+initialize_time_tracking_table()
+
 
 # Start the HTTP server
 with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:

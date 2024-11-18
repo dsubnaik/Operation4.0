@@ -1,3 +1,8 @@
+#Program Name: flashcards.py
+#Developer: Cassandra Villalobos
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: Includes all methods related to the flashcards
 import sqlite3
 from datetime import datetime
 
@@ -35,6 +40,7 @@ def initialize_flashcards_table():
     conn.commit()
     conn.close()
 
+
 # Add a new study set
 def add_study_set(user_id, set_name):
     conn = get_connection()
@@ -60,6 +66,7 @@ def get_study_sets(user_id):
     study_sets = cursor.fetchall()
     conn.close()
     return [{'id': row[0], 'name': row[1]} for row in study_sets]
+
 
 # Add a flashcard to a specific study set
 def add_flashcard(study_set_id, question, answer):

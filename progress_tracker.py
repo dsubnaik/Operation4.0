@@ -1,3 +1,8 @@
+#Program Name: progress_tracker.py
+#Developer: Derrick Subnaik
+#Date Created: 11/17/2024
+# Version: 1.0
+#Purpose: Serve the progress_tracker methods
 import sqlite3
 from achievements import check_and_unlock_achievement
 
@@ -163,6 +168,7 @@ def get_user_progress(user_id):
     conn.close()
     return progress_data
 
+#method the check if an achievement is unlocked and will store into database
 def check_and_unlock_achievement(user_id, action_type, action_count):
     conn = get_connection()
     cursor = conn.cursor()

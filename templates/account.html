@@ -1,3 +1,8 @@
+<!--Program Name: account.html
+Developer: Yuva Praneeth Adapa
+Date Created: 11/17/2024
+Version: 1.0
+Purpose: The front end for the account page of the application-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,13 +16,12 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e5e3e6; /* Matching the background color from the homepage */
+            background-color: #e5e3e6;
         }
 
-        /* Header (white top panel) */
         .header {
-            background-color: white;
-            padding: 10px 0;
+            background-color: #72a37f;
+            padding: 15px 20px; /* Increased padding to provide more space */
             position: fixed;
             width: 100%;
             top: 0;
@@ -26,11 +30,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            box-sizing: border-box; /* Ensures padding doesn't overflow the header */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .app-name {
-            font-size: 22px; /* Matching homepage font size */
+            font-size: 22px;
             font-weight: bold;
             color: black;
         }
@@ -42,6 +47,14 @@
             flex-wrap: wrap;
         }
 
+        .header nav > div {
+            position: relative;
+        }
+
+        .header nav > div:hover .dropdown {
+            display: block;
+        }
+
         .header nav a {
             color: black;
             text-decoration: none;
@@ -51,14 +64,48 @@
         }
 
         .header nav a:hover {
-            background-color: #575757;
+            background-color: #4c6352;
             color: white;
         }
 
         .header nav a.active {
-            background-color: #636060;
+            background-color: #4c6352;
             color: white;
         }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #4c6352; /* Darker green for better contrast */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for depth */
+            border-radius: 8px; /* More rounded corners */
+            min-width: 150px;
+            z-index: 1000;
+            padding: 5px 0; /* Space between items */
+        }
+
+        .dropdown li {
+            display: block;
+        }
+
+        .dropdown li a {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white; /* Change text color to white for contrast */
+            text-decoration: none;
+            display: block; /* Ensures the link spans the full width */
+            border-radius: 4px; /* Rounded corners for individual items */
+        }
+
+        .dropdown li a:hover {
+            background-color: #72a37f; /* Highlighted item color */
+            color: black; /* Text color for hover */
+            font-weight: bold; /* Emphasize hovered text */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+        }
+
 
         /* Main content layout */
         .main-content {
@@ -70,7 +117,7 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center; /* Centering the content */
+            text-align: center;
         }
 
         h1, h2 {
@@ -131,12 +178,18 @@
             background-color: #d32f2f;
         }
 
-        #profileImage {
-            display: block;
-            margin-top: 10px;
-            border-radius: 50%;
+        @media (max-width: 768px) {
+            .header nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-content {
+                padding: 10px;
+            }
+            input[type="text"], input[type="email"], input[type="password"] {
+                font-size: 14px;
+            }
         }
-
     </style>
 </head>
 <body>
@@ -145,13 +198,30 @@
     <div class="header">
         <div class="app-name">Operation 4.0</div>
         <nav>
-            <a href="/home.html">Home</a>
-            <a href="/study.html">Study</a>
-            <a href="/account.html" class="active">My Account</a>
-            <a href="/achievements.html">Achievements</a>
-            <a href="/progress.html">Progress</a>
-            <a href="/effort-levels.html">Effort Levels</a>
-            <a href="/recommended-sources.html">Recommended Sources</a>
+            <div>
+                <a href="/home.html" id="home-link">Home</a>
+            </div>
+            <div>
+                <a href="#">Study Resources</a>
+                <ul class="dropdown">
+                    <li><a href="/study.html" id="study-link">Study</a></li>
+                    <li><a href="/recommended-sources.html" id="recommended-link">Recommended Sources</a></li>
+                </ul>
+            </div>
+            <div>
+                <a href="#">Account</a>
+                <ul class="dropdown">
+                    <li><a href="/account.html" id="account-link">My Account</a></li>
+                    <li><a href="/effort-levels.html" id="effort-link">Effort Levels</a></li>
+                </ul>
+            </div>
+            <div>
+                <a href="#">Achievements</a>
+                <ul class="dropdown">
+                    <li><a href="/achievements.html" id="achievements-link">Achievements</a></li>
+                    <li><a href="/progress.html" id="progress-link">Progress</a></li>
+                </ul>
+            </div>
         </nav>
     </div>
 
@@ -160,37 +230,29 @@
         <h1>Account Page</h1>
         <p>Welcome to the My Account page.</p>
 
-        <!-- Profile Section -->
+        <!-- Edit Username Section -->
         <div class="profile-section">
-            <h2>Edit Profile Picture</h2>
-            <input type="file" id="profilePicture">
-            <img id="profileImage" src="default_profile.png" alt="Profile Picture" width="150px">
+            <h2>Edit Username</h2>
+            <label for="userName">Username:</label>
+            <input type="text" id="userName" value="<!--USERNAME_PLACEHOLDER-->">
+            <button type="button" onclick="updateUserInfo()">Save Username</button>
         </div>
 
         <!-- Personal Information -->
         <div class="profile-section">
             <h2>Personal Information</h2>
-            <label>Name:</label>
-            <input type="text" id="userName" value="John Doe">
-            <label>Email:</label>
+            <label for="displayName">Name:</label>
+            <input type="text" id="displayName" value="John Doe">
+            <label for="userEmail">Email:</label>
             <input type="email" id="userEmail" value="johndoe@example.com" disabled>
         </div>
 
         <!-- Password Management -->
         <div class="profile-section">
             <h2>Change Password</h2>
-            <label>New Password:</label>
+            <label for="newPassword">New Password:</label>
             <input type="password" id="newPassword">
-            <button type="button" onclick="updatePassword()">Update Password</button>
-        </div>
-
-        <!-- Notification Settings -->
-        <div class="profile-section">
-            <h2>Notification Settings</h2>
-            <label>
-                <input type="checkbox" id="emailNotifications" checked>
-                Email Notifications
-            </label>
+            <button type="button" onclick="updateUserInfo()">Update Password</button>
         </div>
 
         <!-- Logout Button -->
@@ -200,13 +262,50 @@
     </div>
 
     <script>
-        function updatePassword() {
-            alert("Password Updated!");
+        function updateUserInfo() {
+            const username = document.getElementById("userName").value;
+            const displayName = document.getElementById("displayName").value;
+            const newPassword = document.getElementById("newPassword").value;
+
+            fetch('/api/update_user_info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    name: displayName,
+                    new_password: newPassword ? newPassword : null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // Success message
+                } else if (data.error) {
+                    alert("Error: " + data.error); // Error message
+                }
+            })
+            .catch(error => {
+                alert("An error occurred. Please try again later.");
+                console.error('Error:', error);
+            });
         }
 
         function logout() {
-            alert("Logging out...");
-            window.location.href = 'login_screen.html'; 
+            fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/login_screen.html';
+                } else {
+                    alert("Error logging out. Please try again.");
+                }
+            })
+            .catch(error => {
+                alert("Logout error. Please try again.");
+                console.error('Logout error:', error);
+            });
         }
     </script>
 
