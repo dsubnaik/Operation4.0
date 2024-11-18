@@ -2,7 +2,7 @@
 Developer: Yuva Praneeth Adapa
 Date Created: 11/17/2024
 Version: 1.0
-Purpose: The front end template for the  quiz page of the application-->
+Purpose: The front end template for the quiz page of the application-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,14 +129,37 @@ Purpose: The front end template for the  quiz page of the application-->
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             display: none;
             z-index: 1000;
+            animation: slideIn 0.5s, fadeOut 3s 4.5s forwards;
+            text-align: center;
         }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+        }
+
     </style>
 </head>
 <body onload="fetchStudySets()">
@@ -170,6 +193,44 @@ Purpose: The front end template for the  quiz page of the application-->
     <div id="toast"></div>
 
     <script>
+        let pageStartTime = null;
+
+        // Start the timer when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            pageStartTime = Date.now(); // Record the time when the user opens the page
+        });
+
+        // Send time spent on the page to the server before the user exits
+        function trackPageTime() {
+            if (!pageStartTime) return; // Exit if `pageStartTime` is not set
+
+            const timeSpent = Math.floor((Date.now() - pageStartTime) / 1000); // Time in seconds
+            pageStartTime = null; // Reset to avoid duplicate calls
+
+            const payload = JSON.stringify({
+                page: window.location.pathname, // Identify the page
+                time_spent: timeSpent
+            });
+
+            try {
+                // Attempt to send via `sendBeacon` for reliability
+                const success = navigator.sendBeacon('/api/track_page_time', payload);
+                if (!success) throw new Error("sendBeacon failed"); // Fallback if `sendBeacon` is unsuccessful
+            } catch (error) {
+                // Fallback to `fetch` in case of `sendBeacon` failure
+                fetch('/api/track_page_time', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                }).catch(err => console.error("Failed to send time tracking data via fetch:", err));
+            }
+        }
+
+        // Track page time when the user leaves the page
+        window.addEventListener("beforeunload", trackPageTime);
+
+        const displayedAchievements = new Set();
+
         async function fetchStudySets() {
             try {
                 const response = await fetch('/api/get_study_sets');
@@ -268,9 +329,19 @@ Purpose: The front end template for the  quiz page of the application-->
                 const response = await fetch('/api/get_user_achievements');
                 if (response.ok) {
                     const achievements = await response.json();
+                    let newAchievementsUnlocked = false;
+
                     achievements.forEach(achievement => {
-                        showToast(`🎉 Achievement Unlocked: ${achievement.name}`);
+                        if (!displayedAchievements.has(achievement.name)) {
+                            showToast(`🎉 Achievement Unlocked: ${achievement.name}`);
+                            displayedAchievements.add(achievement.name);
+                            newAchievementsUnlocked = true;
+                        }
                     });
+
+                    if (newAchievementsUnlocked) {
+                        showToast("🎉 You have unlocked a notification!");
+                    }
                 } else {
                     console.error("Failed to fetch achievements.");
                 }
@@ -282,10 +353,12 @@ Purpose: The front end template for the  quiz page of the application-->
         function showToast(message) {
             const toast = document.getElementById("toast");
             toast.textContent = message;
-            toast.style.display = "block";
+            toast.style.display = "block"; // Make the notification visible
+            
+            // Hide the toast automatically after the animation ends
             setTimeout(() => {
                 toast.style.display = "none";
-            }, 4000);
+            }, 5000); // Matches fadeOut animation timing (4.5s delay + fade duration)
         }
 
         function exitQuiz() {

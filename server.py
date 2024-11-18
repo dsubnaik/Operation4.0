@@ -17,6 +17,7 @@ from effort_tracker import initialize_effort_levels_table, get_user_effort_level
 from userDatabase import initialize_database,get_connection
 from flashcards import initialize_flashcards_table, get_study_sets, get_flashcards, add_study_set, add_flashcard, delete_flashcard_from_db, delete_study_set
 from resource_handler import initialize_resources_table, get_resources, generate_resources_html
+from time_tracking import initialize_time_tracking_table, handle_page_time_tracking
 
 
 PORT = 8000
@@ -282,7 +283,8 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b'{"error": "Missing study set ID, question, or answer"}')
 
-
+        elif self.path == '/api/track_page_time':
+            handle_page_time_tracking(self, sessions)  # Pass the sessions object
 
         elif self.path == '/api/delete_flashcard':
             data = parse_json_post_data(self)
@@ -363,7 +365,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             if handle_signup(username, password, first_name, last_name, email):
-                redirect(self, '/home.html')
+                redirect(self, '/login_screen.html')
             else:
                 redirect(self, '/signup.html?error=user_exists')
 
@@ -578,6 +580,8 @@ initialize_progress_tables()
 #initialize_effort_levels_table()
 initialize_resources_table()
 initialize_flashcards_table()
+initialize_time_tracking_table()
+
 
 # Start the HTTP server
 with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
