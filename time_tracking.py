@@ -1,5 +1,5 @@
 #Program Name: server.py
-#Developer: Hunter Nichils
+#Developer: Hunter Nich0ls
 #Date Created: 11/17/2024
 # Version: 1.0
 #Purpose: The ability to store time tracked with certain pages within the application
