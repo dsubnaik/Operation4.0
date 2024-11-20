@@ -20,11 +20,12 @@ def initialize_flashcards_table():
     CREATE TABLE IF NOT EXISTS study_sets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
-        name TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )
     ''')
+
     
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS flashcards (
@@ -51,10 +52,9 @@ def add_study_set(user_id, set_name):
         ''', (user_id, set_name))
         conn.commit()
         return cursor.lastrowid
-    except sqlite3.IntegrityError:
-        return None  # Study set with this name already exists
     finally:
         conn.close()
+
 
 # Get all study sets for a user
 def get_study_sets(user_id):
@@ -139,3 +139,4 @@ def delete_study_set(study_set_id):
     cursor.execute('DELETE FROM study_sets WHERE id = ?', (study_set_id,))
     conn.commit()
     conn.close()
+

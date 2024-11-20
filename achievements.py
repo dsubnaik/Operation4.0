@@ -41,12 +41,13 @@ def initialize_achievements():
     # Predefine achievements
     achievements = [
         # Quiz-related achievements
-        ("Quiz Novice", "Completed 5 quizzes. Keep up the great work!", "Bronze Quizzer"),
+        ("Quiz Novice", "Completed 1 quizzes. Keep up the great work!", "Bronze Quizzer"),
         ("Quiz Intermediate", "Completed 20 quizzes. Impressive dedication!", "Silver Quizzer"),
         ("Quiz Expert", "Completed 50 quizzes. You're a quiz master!", "Gold Quizzer"),
         ("Perfect Score!", "Achieved a perfect score on a quiz.", "A+ Achiever"),
 
         # Flashcard-related achievements
+        ("Flashcard Merchant", "Created 5 flashcards. Kepp it going!", "Flashcard Pro"),
         ("Flashcard Creator", "Created 10 flashcards. Great start!", "Flashcard Apprentice"),
         ("Flashcard Collector", "Created 50 flashcards. Building a great collection!", "Flashcard Enthusiast"),
         ("Flashcard Master", "Created 100 flashcards. You're a flashcard expert!", "Flashcard Mastery"),
@@ -110,7 +111,7 @@ def check_and_unlock_achievement(user_id, action_type, action_count):
     achievement_criteria = {
         # Quiz-related achievements
         "quiz_completed": [
-            (5, "Quiz Novice"),
+            (1, "Quiz Novice"),
             (20, "Quiz Intermediate"),
             (50, "Quiz Expert"),
         ],
@@ -120,6 +121,7 @@ def check_and_unlock_achievement(user_id, action_type, action_count):
 
         # Flashcard-related achievements
         "flashcard_created": [
+            (5, "Flashcard Merchant"),  # Add logic for 5 flashcards
             (10, "Flashcard Creator"),
             (50, "Flashcard Collector"),
             (100, "Flashcard Master"),
